@@ -1,2 +1,3 @@
-# loken-utilities-ts
-Utility library for typescript.
+# @loken/utilities
+
+Utility library for javascript with typescript support.

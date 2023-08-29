@@ -1,0 +1,6 @@
+{
+	"extends": [
+		"@roenlie/eslint-config/recommended"
+	],
+	"rules": {}
+}
