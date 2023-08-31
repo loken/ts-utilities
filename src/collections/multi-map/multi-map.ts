@@ -75,6 +75,11 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 			values:  getTrim('values',  options?.trim, 'none'),
 		};
 
+		if (sep.prefix && input.startsWith(sep.prefix))
+			input = input.substring(sep.prefix.length);
+		if (sep.suffix && input.endsWith(sep.suffix))
+			input = input.substring(0, input.length - sep.suffix.length);
+
 		input = trimBy(input, trim.input);
 
 		const lines = splitBy(input, {
@@ -121,7 +126,13 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 			entries.push(entry);
 		}
 
-		return entries.join(sep.entry);
+		let output = entries.join(sep.entry);
+		if (sep.prefix)
+			output = sep.prefix + output;
+		if (sep.suffix)
+			output += sep.suffix;
+
+		return output;
 	}
 
 	/**
@@ -147,7 +158,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	//#endregion
 
 	/** The default values for `MultiMapSeparators`. */
-	public static readonly defaultSeparators: Required<MultiMapSeparators> = Object.freeze({
+	public static readonly defaultSeparators: MultiMapSeparators = Object.freeze({
 		entry:    '\n',
 		keyValue: ':',
 		value:    ',',

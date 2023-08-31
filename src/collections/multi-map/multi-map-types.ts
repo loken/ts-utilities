@@ -60,4 +60,8 @@ export interface MultiMapSeparators {
 	keyValue?: string,
 	/** The separator between each entry value. Default: `','`. */
 	value?: string,
+	/** Prefix before the first entry. */
+	prefix?: string,
+	/** Suffix after the last entry. */
+	suffix?: string,
 }
