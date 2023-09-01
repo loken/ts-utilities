@@ -18,6 +18,6 @@ describe('iterateAll', () => {
 	test('iterates fully', () => {
 		iterateAll(testGenerator());
 
-		expect(exposed).to.have.members([ 'a', 'b', 'c' ]);
+		expect(exposed).toEqual([ 'a', 'b', 'c' ]);
 	});
 });
