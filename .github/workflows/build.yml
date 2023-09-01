@@ -74,8 +74,7 @@ jobs:
       - name: Build package
         run: pnpm package
 
-      - name: Build and publish package
-        run: |
-          pnpm publish --access public --no-git-checks
+      - name: Publish package
+        run: pnpm publish --access restricted --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
