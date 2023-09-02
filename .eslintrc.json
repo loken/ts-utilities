@@ -2,5 +2,10 @@
 	"extends": [
 		"@roenlie/eslint-config/recommended"
 	],
-	"rules": {}
+	"rules": {
+		"@typescript-eslint/consistent-type-definitions": [
+			"off",
+			"interface"
+		]
+	}
 }
