@@ -1,36 +1,34 @@
 {
-	"module-templates.templateFiles": [],
-	"module-templates.engine": "handlebars",
-	"editor.bracketPairColorization.enabled": true,
-	"editor.guides.bracketPairs": "active",
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	},
-	"eslint.run": "onSave",
-	"eslint.useESLintClass": true,
-	"eslint.format.enable": true,
-	"eslint.validate": [
-		"javascript",
-		"typescript",
-	],
-	"editor.detectIndentation": false,
-	"editor.insertSpaces": false,
-	"prettier.enable": false,
 	"[javascript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
 	"[typescript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"editor.detectIndentation": true,
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"eslint.format.enable": true,
+	"eslint.run": "onSave",
+	"eslint.useESLintClass": true,
+	"eslint.validate": [
+		"javascript",
+		"typescript",
+	],
+	"javascript.preferences.importModuleSpecifierEnding": "js",
+	"module-templates.templateFiles": [],
+	"module-templates.engine": "handlebars",
+	"npm.packageManager": "pnpm",
+	"peacock.color": "#0C0E21",
+	"prettier.enable": false,
 	"typescript.format.insertSpaceAfterTypeAssertion": true,
 	"typescript.format.semicolons": "insert",
 	"typescript.preferences.importModuleSpecifier": "project-relative",
 	"typescript.preferences.quoteStyle": "single",
 	"typescript.updateImportsOnFileMove.enabled": "always",
-	"javascript.preferences.importModuleSpecifierEnding": "js",
-	"typescript.preferences.importModuleSpecifierEnding": "js",
-	"npm.packageManager": "pnpm",
 	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"workbench.colorCustomizations": {
 		"activityBar.activeBackground": "#1a1e46",
@@ -51,5 +49,4 @@
 		"titleBar.inactiveBackground": "#0c0e2199",
 		"titleBar.inactiveForeground": "#e7e7e799"
 	},
-	"peacock.color": "#0C0E21",
 }
