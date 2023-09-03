@@ -6,7 +6,9 @@ on:
     branches:
       - main
       - 'releases?/**'
+      - 'hotfix/**'
       - 'features?/**'
+      - 'tasks?/**'
       - 'pr/**'
 
 jobs:
