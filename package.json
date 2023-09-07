@@ -4,7 +4,7 @@
 	"version": "1.0.0-es-semver-replace.0",
 	"license": "MIT",
 	"readme": "README.md",
-	"repository": "github:loken/loken-utilities-ts",
+	"repository": "github:loken/ts-utilities",
 	"keywords": [
 		"lib",
 		"library",
