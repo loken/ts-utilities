@@ -108,20 +108,27 @@ We have utilities for splitting and trimming strings using various separators an
 
 ### The `TryResult` pattern
 
-Rather than throwing an exception when a function can't perform its task, it's useful to return a result which may contain the value when it's a success and somehow signal that the value can't be used if it's not successful.
+Rather than throwing an exception when a function can't perform its task, it's useful to return a result which may contain the value when it's a success and somehow signal that the value can't be used, potentially with a reason, if it's not successful.
 
-This is what our `TryResult<T>` is for. It allows us to do things like this:
+This is what our `TryResult<Val, Reason>` is for. It allows us to do things like this while having the types be appropriately constrained within the conditionals:
 
 ```typescript
+/* Without reasons. */
 declare const tryIt: () => TryResult<string>;
-
-const { value, success } = tryIt();
-
+const [ value, success ] = tryIt();
 if (success)
 	console.log(value);
 ```
 
-The benefit being that typescript will know that after testing `success` the value will be typed as the type parameter for `TryResult`; `string` in the above example, and when `success` is `false` `value` will be `undefined`.
+```typescript
+/* With reasons. */
+declare const tryIt: () => TryResult<string, string>;
+const [ value, success, reason ] = tryIt();
+if (success)
+	console.log(value);
+else
+	console.log(reason);
+```
 
 This is equivalent to returning a boolean and an out parameter in languages like C#.
 

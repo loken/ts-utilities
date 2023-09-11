@@ -1,4 +1,4 @@
-import { type TryResult } from '../patterns/try.js';
+import { type TryResult, tryResult } from '../patterns/try.js';
 import { iterateMultiple, type Multiple } from './iteration/multiple.js';
 import { type ILinear } from './linear.js';
 
@@ -31,9 +31,9 @@ export class Stack<T> {
 
 	public tryPop(): TryResult<T> {
 		if (this.#stack.length === 0)
-			return { success: false };
+			return tryResult.fail();
 
-		return { value: this.#stack.pop()!, success: true };
+		return tryResult.succeed(this.#stack.pop()!);
 	}
 
 	public peek(): T {
@@ -45,9 +45,9 @@ export class Stack<T> {
 
 	public tryPeek(): TryResult<T> {
 		if (this.#stack.length === 0)
-			return { success: false };
+			return tryResult.fail();
 
-		return { value: this.#stack.at(-1)!, success: true };
+		return tryResult.succeed(this.#stack.at(-1)!);
 	}
 
 	public clear(): void {

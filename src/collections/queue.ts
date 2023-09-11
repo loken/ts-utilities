@@ -1,4 +1,4 @@
-import { type TryResult } from '../patterns/try.js';
+import { type TryResult, tryResult } from '../patterns/try.js';
 import { iterateMultiple, type Multiple } from './iteration/multiple.js';
 import { type ILinear } from './linear.js';
 
@@ -35,12 +35,12 @@ export class Queue<T> {
 
 	public tryDequeue(): TryResult<T> {
 		if (this.#tail === this.#head)
-			return { success: false };
+			return tryResult.fail();
 
 		const item = this.#queue.get(this.#head)!;
 		this.#queue.delete(this.#head++);
 
-		return { value: item, success: true };
+		return tryResult.succeed(item);
 	}
 
 	public peek(): T {
@@ -52,9 +52,9 @@ export class Queue<T> {
 
 	public tryPeek(): TryResult<T> {
 		if (this.#tail === this.#head)
-			return { success: false };
+			return tryResult.fail();
 
-		return { value: this.#queue.get(this.#head)!, success: true };
+		return tryResult.succeed(this.#queue.get(this.#head)!);
 	}
 
 	public clear(): void {
