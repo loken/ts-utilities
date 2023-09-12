@@ -1,22 +1,45 @@
 /**
  * Result from try* functions where the `value` is narrowed to
- * `T` or `undefined` depending on the value of `success`.
+ * `Val` or `undefined` depending on the value of `success`.
+ *
+ * Optionally a strongly typed `reason` for failure may be given.
  */
-export type TryResult<Val = any, Reason = never> =
-	readonly [ value: Val, success: true] |
-	([Reason] extends [never]
-		? readonly [ value: undefined, success: false ]
-		: readonly [ value: undefined, success: false, reason: Reason ]);
+export type TryResult<Val, Reason = never> =
+	| TrySuccess<Val>
+	| ([Reason] extends [never]
+		? TryFailure
+		: TryError<Reason>);
+
+/** The result when a try* function succeeds. */
+export type TrySuccess<Val>  = readonly [ value: Val, success: true];
+
+/** The result when a try* function fails without a reason. */
+export type TryFailure       = readonly [ value: undefined, success: false ];
+
+/** The result when a try* function fails with a reason. */
+export type TryError<Reason> = readonly [ value: undefined, success: false, reason: Reason ];
+
 
 /**
  * Factory for creating `TryResult`s.
  */
 export const tryResult = Object.freeze({
-	/** Create a failed `TryResult` with or without a `reason`. */
-	fail: <Reason = never>(reason?: Reason) => reason === undefined
-		? Object.freeze([ undefined, false, reason ]) as TryResult<any, Reason>
-		: Object.freeze([ undefined, false ]) as TryResult<any, Reason>,
-
 	/** Create a successful `TryResult<T>` containing the `value`. */
-	succeed: <Val>(value: Val) => Object.freeze([ value, true ]) as TryResult<Val>,
+	succeed: tryResultSucceed,
+
+	/** Create a failed `TryResult` with or without a `reason`. */
+	fail: tryResultFail,
 });
+
+
+function tryResultSucceed<Val>(value: Val): TrySuccess<Val> {
+	return Object.freeze([ value, true ]);
+}
+
+function tryResultFail(): TryFailure;
+function tryResultFail<Reason>(reason: Reason): TryError<Reason>;
+function tryResultFail(reason?: any) {
+	return reason !== undefined
+		? Object.freeze([ undefined, false, reason ])
+		: Object.freeze([ undefined, false ]);
+}
