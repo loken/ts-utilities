@@ -133,6 +133,31 @@ else
 This is equivalent to returning a boolean and an out parameter in languages like C#.
 
 
+### The `Maybe` pattern
+
+When the type of value and/or error can never be undefined, you can use `Maybe<Val, Error>` instead of the more complex `TryResult<Val, Reason>` since you can simply check if the value or error is undefined.
+
+Since `Maybe` is simpler than `TryResult` there is no need for a result factory for this type.
+
+Instead we provide some utilities for turning something that may or may not throw into a `Maybe`; `mayGet` for calling a function which may get or throw, and `mayResolve` for a promise. Like for `TryResult` the important part is that type of the value and error can be narrowed.
+
+```typescript
+const [num, error] = mayGet(getOrThrow);
+if (typeof value === 'number')
+	console.log(value);
+else
+	console.log(error);
+```
+
+```typescript
+const [num, error] = mayResolve(numberPromise);
+if (typeof value === 'number')
+	console.log(value);
+else
+	console.log(error);
+```
+
+
 ### The `ValueProvider` pattern
 
 Sometimes you need to provide a value in some cases. Sometimes providing that value is computationally expensive. In those cases it's nice to lazily generate the value only when needed.
