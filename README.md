@@ -171,3 +171,34 @@ export const doIt = <T>(first: boolean, some: ValueProvider<T>, other: ValueProv
 	return resolveValueProvider(first ? some : other);
 };
 ```
+
+
+### The `MapArgs` pattern
+
+Sometimes a function needs to transform one or more arguments into another type of value and return each of them, like `Array.prototype.map`. But that creates a need for one function which takes one input argument and returns one transformed item and another function which does this for an array of inputs.
+
+With the `mapArgs` utility function and `MapArgs` utility type you can easily make one function for both of those needs. And to top it off you can make your function return a **tuple** with the same length as the input arguments for easily destructuring the outputs and avoiding the possibility of the destructured arguments being undefined, which would be the case if you return an `Array`.
+
+In addition to the `args` and `transform` function, mapArgs takes two boolean arguments for deciding behavior:
+- `asTuple`: Return a tuple (true), and otherwise an `Array` (default: false)
+- `allowEmpty`: Throw when no items have been provided and return type `never` (default: false) or simply return `undefined` both as the value and as the type (true).
+
+So, you could define a contrived function for prefixing numbers and returning and destructuring a tuple while disallowing no numbers like this:
+
+```typescript
+const mapPrefixTuple = <Args extends number[]>(prefix: string, ...args: Args) => {
+	return mapArgs(args, arg => `${ prefix }-${ arg }`, true, false);
+};
+
+// a, b and c will be strings, rather than string | undefined because we passed true as the third argument 'asTuple' to mapArgs.
+const [a, b, c] = mapPrefixTuple('pre', 1, 2, 3);
+//    ^ [string, string, string]
+
+// Retrieve a single item without array wrapping
+const singleMapped = mapPrefixTuple('pre', 1);
+//    ^ string
+
+// Trying to retrieve no items will throw because we passed false as the fourth argument 'allowEmpty' to mapArgs.
+const none = mapPrefixTuple('pre');
+//           ^ throws
+```
