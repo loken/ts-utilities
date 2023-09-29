@@ -106,6 +106,22 @@ We have utilities for splitting and trimming strings using various separators an
 	You can specify what separator(s) to use for both of the split* functions, but if you don't a set of default separators is used: `[':', ';', ',', '|']`.
 
 
+### Random
+
+We have utilities for generating a random number, integer or from the gaussian normal distribution:
+
+```typescript
+// Random floating point number in the range [10, 99.2).
+const num = randomNumber(10, 99.2);
+// Random integer in the range [10, 42).
+const int = randomNumber(10, 42);
+// Sample the normal distribution which is the gaussian distribution with a mean of 0 and a standard deviation of 1.
+const normal = randomGaussian();
+// Sample the gaussian distribution with a mean of 42 and a standard deviation of 3.17.
+const normal = randomGaussian(42, 3.17);
+```
+
+
 ### The `TryResult` pattern
 
 Rather than throwing an exception when a function can't perform its task, it's useful to return a result which may contain the value when it's a success and somehow signal that the value can't be used, potentially with a reason, if it's not successful.
