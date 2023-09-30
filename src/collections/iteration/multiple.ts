@@ -31,3 +31,26 @@ export const spreadMultiple = <T>(sources: Multiple<T>, reuseArray = true): T[] 
 	else
 		return [ sources ];
 };
+
+/**
+ * Add one or more `sources` to an existing `target` array or `Set`.
+ * @param sources One or more sources.
+ * @param target The target to receive the sources.
+ * @returns The number of items that was added.
+ */
+export const addMultiple = <T>(sources: Multiple<T>, target: T[] | Set<T>) => {
+	if (Array.isArray(target)) {
+		const len = target.length;
+		for (const item of iterateMultiple(sources))
+			target.push(item);
+
+		return target.length - len;
+	}
+	else {
+		const size = target.size;
+		for (const item of iterateMultiple(sources))
+			target.add(item);
+
+		return target.size - size;
+	}
+};

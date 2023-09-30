@@ -1,6 +1,6 @@
 import { splitBy, splitKvp } from '../../primitives/string/splitting.js';
 import { getTrim, trimBy } from '../../primitives/string/trimming.js';
-import { iterateMultiple, type Multiple } from '../iteration/multiple.js';
+import { addMultiple, iterateMultiple, type Multiple } from '../iteration/multiple.js';
 import { mapGetLazy } from '../map.js';
 import { type MultiMapParsing, type MultiMapRendering, type MultiMapSeparators, type MultiMapTrim } from './multi-map-types.js';
 
@@ -31,14 +31,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	public add(key: T, values: Multiple<T>): number {
 		const set = this.getOrAdd(key);
 
-		let count = 0;
-
-		for (const value of iterateMultiple(values)) {
-			set.add(value);
-			count++;
-		}
-
-		return count;
+		return addMultiple(values, set);
 	}
 
 	/**
@@ -52,7 +45,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	public remove(key: T, values: Multiple<T>): T[] {
 		const set = this.getOrAdd(key);
 
-		const removed = [];
+		const removed: T[] = [];
 
 		for (const value of iterateMultiple(values)) {
 			if (set.delete(value))

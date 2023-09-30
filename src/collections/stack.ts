@@ -1,5 +1,5 @@
 import { type TryResult, tryResult } from '../patterns/try.js';
-import { iterateMultiple, type Multiple } from './iteration/multiple.js';
+import { addMultiple, type Multiple } from './iteration/multiple.js';
 import { type ILinear } from './linear.js';
 
 export class Stack<T> {
@@ -11,14 +11,7 @@ export class Stack<T> {
 	}
 
 	public push(items: Multiple<T>): number {
-		let count = 0;
-
-		for (const item of iterateMultiple(items)) {
-			this.#stack.push(item);
-			count++;
-		}
-
-		return count;
+		return addMultiple(items, this.#stack);
 	}
 
 	public pop(): T {
