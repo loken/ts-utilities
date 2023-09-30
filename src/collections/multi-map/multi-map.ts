@@ -12,6 +12,15 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 
 	//#region set management.
 	/**
+	 * Get the `Set` at the `key` if it already exists or add and return an empty `Set` otherwise.
+	 * @param key The map key.
+	 * @returns The `Set<T>` that already existed or was added.
+	 */
+	public getOrAdd(key: T) {
+		return mapGetLazy(this, key, () => new Set<T>());
+	}
+
+	/**
 	 * Add one or more `values` to the set at the `key`.
 	 *
 	 * Will create and add the `Set` to the `Map` if it doesn't already exist.
@@ -20,7 +29,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @returns The number of values that were added.
 	 */
 	public add(key: T, values: Multiple<T>): number {
-		const set = mapGetLazy(this, key, () => new Set<T>());
+		const set = this.getOrAdd(key);
 
 		let count = 0;
 
@@ -41,7 +50,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @returns The subset of `values` that were previously in the `Set`.
 	 */
 	public remove(key: T, values: Multiple<T>): T[] {
-		const set = mapGetLazy(this, key, () => new Set<T>());
+		const set = this.getOrAdd(key);
 
 		const removed = [];
 
@@ -89,20 +98,19 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 
 		for (const line of lines) {
 			const [ rawKey, rawValue ] = splitKvp(line, { sep: sep.keyValue });
-			if (rawValue === null)
-				continue;
-
 			const trimmedKey = trimBy(rawKey, trim.keys);
-
 			const key = options?.transform?.(trimmedKey) ?? (trimmedKey as T);
-			const values = splitBy(rawValue, { sep: sep.value }).map(value => {
-				const v = trimBy(value, trim.values);
 
-				return options?.transform?.(v) ?? (v as T);
-			});
+			if (rawValue === null) {
+				this.getOrAdd(key);
+			}
+			else {
+				this.add(key, splitBy(rawValue, { sep: sep.value }).map(value => {
+					const v = trimBy(value, trim.values);
 
-			for (const value of values)
-				this.add(key, value);
+					return options?.transform?.(v) ?? (v as T);
+				}));
+			}
 		}
 
 		return this;
@@ -120,10 +128,15 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 
 		for (const [ rawKey, rawValues ] of this.entries()) {
 			const key = options?.transform?.(rawKey) ?? rawKey;
-			const values: string = [ ...rawValues ].map(v => options?.transform?.(v) ?? v).join(sep.value);
-			const entry = `${ key }${ sep.keyValue }${ values }`;
+			if (rawValues.size === 0) {
+				entries.push(`${ key }`);
+			}
+			else {
+				const values: string = [ ...rawValues ].map(v => options?.transform?.(v) ?? v).join(sep.value);
+				const entry = `${ key }${ sep.keyValue }${ values }`;
 
-			entries.push(entry);
+				entries.push(entry);
+			}
 		}
 
 		let output = entries.join(sep.entry);

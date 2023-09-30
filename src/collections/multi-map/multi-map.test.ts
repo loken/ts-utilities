@@ -36,6 +36,19 @@ describe('MultiMap', () => {
 		expect(output).to.equal(input);
 	});
 
+	test('serialization preserves keys without values', () => {
+		const input = `
+		KeyWithValues:A,B
+		KeyWithoutValues`;
+
+		const map = MultiMap.parse(input);
+		expect(map.get('KeyWithValues')).has.keys([ 'A', 'B' ]);
+		expect(map.get('KeyWithoutValues')).is.empty;
+
+		const output = map.render(sep);
+		expect(output).to.equal(input);
+	});
+
 	test('serialization with custom separators', () => {
 		const input = `A>A1+A2#A1>A11+A12#B>B1+B12`;
 		const sep = MultiMap.getSeparators({
