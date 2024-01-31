@@ -10,6 +10,20 @@ describe('MultiMap', () => {
 		prefix: '\n\t\t',
 	};
 
+	test('read from record', () => {
+		const map = MultiMap.readRecord({ A: [ 'A1', 'A2' ] });
+
+		expect(map.size).to.equal(1);
+		expect(map.get('A')).has.keys([ 'A1', 'A2' ]);
+	});
+
+	test('read from JSON', () => {
+		const map = MultiMap.readJson('{"A": ["A1", "A2"]}');
+
+		expect(map.size).to.equal(1);
+		expect(map.get('A')).has.keys([ 'A1', 'A2' ]);
+	});
+
 	test('serialization of strings', () => {
 		const input = `
 		A:A1,A2

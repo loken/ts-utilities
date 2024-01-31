@@ -61,6 +61,31 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 
 	//#region serialization
 	/**
+	 * Read the `source` record into a `MultiMap` instance.
+	 *
+	 * @param source The JSON compatible source record.
+	 * @returns A `MultiMap<string>` with the `source` values.
+	 */
+	public static readRecord(source: Record<string, string[]>) {
+		const map = new MultiMap<string>();
+
+		for (const [ key, values ] of Object.entries(source))
+			map.add(key, values);
+
+		return map;
+	}
+
+	/**
+	 * Read the `json` into a `MultiMap` instance.
+	 *
+	 * @param source The JSON representing a record of arrays of strings.
+	 * @returns A `MultiMap<string>` with the `json` values.
+	 */
+	public static readJson(json: string) {
+		return this.readRecord(JSON.parse(json));
+	}
+
+	/**
 	 * Parse the `input` into the existing `MultiMap`.
 	 *
 	 * If you want to obtain a `MultiMap` of something which isn't a string, you must provide a `transform`.
