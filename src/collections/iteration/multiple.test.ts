@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { iterateMultiple, spreadMultiple } from '../../../src/collections/iteration/multiple.js';
+import { addMultiple, iterateMultiple, spreadMultiple } from '../../../src/collections/iteration/multiple.js';
 
 describe('iterateMultiple', () => {
 	it('should iterate a single item', () => {
@@ -13,6 +13,14 @@ describe('iterateMultiple', () => {
 	it('should iterate an array of items', () => {
 		const items = [ { a: 1 }, { a: 2 } ];
 		const result = [ ...iterateMultiple(items) ];
+
+		expect(result).toEqual(items);
+	});
+
+	it('should iterate a Set', () => {
+		const items = [ { a: 1 }, { a: 2 } ];
+		const set = new Set(items);
+		const result = [ ...iterateMultiple(set) ];
 
 		expect(result).toEqual(items);
 	});
@@ -52,6 +60,13 @@ describe('spreadMultiple', () => {
 		expect(result !== items).true;
 	});
 
+	it('should spread a Set', () => {
+		const result = spreadMultiple(new Set([ 1, 2, 3 ]));
+
+		expect(result instanceof Set).toBeFalsy();
+		expect(result).toEqual([ 1, 2, 3 ]);
+	});
+
 	it('should spread an generator', () => {
 		function* generateItems() {
 			yield { a: 1 };
@@ -61,5 +76,26 @@ describe('spreadMultiple', () => {
 		const result = spreadMultiple(generateItems());
 
 		expect(result).toEqual([ { a: 1 }, { a: 2 } ]);
+	});
+});
+
+
+describe('addMultiple', () => {
+	it('should work with arrays', () => {
+		const source = [ 1, 2, 3 ];
+		const target = [ 2, 7, 8 ];
+
+		addMultiple(source, target);
+
+		expect(target).to.deep.equal([ 2, 7, 8, 1, 2, 3 ]);
+	});
+
+	it('should work with sets', () => {
+		const source = new Set<number>([ 1, 2, 3 ]);
+		const target = new Set<number>([ 2, 7, 8 ]);
+
+		addMultiple(source, target);
+
+		expect(target).to.have.keys([ 1, 2, 3, 7, 8 ]);
 	});
 });

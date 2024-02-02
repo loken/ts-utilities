@@ -1,5 +1,5 @@
 /** One or more instances of `T`. */
-export type Multiple<T> = T | T[] | IterableIterator<T>;
+export type Multiple<T> = T | T[] | Set<T> | IterableIterator<T>;
 
 /**
  * Iterate multiple `sources`.
