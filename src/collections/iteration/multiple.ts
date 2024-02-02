@@ -33,24 +33,38 @@ export const spreadMultiple = <T>(sources: Multiple<T>, reuseArray = true): T[] 
 };
 
 /**
- * Add one or more `sources` to an existing `target` array or `Set`.
- * @param sources One or more sources.
- * @param target The target to receive the sources.
- * @returns The number of items that was added.
+ * Add one or more `source` items to an existing `target` array or `Set`.
+ * @param source One or more source items.
+ * @param target The target to receive the source items.
+ * @returns The number of items that were added.
  */
-export const addMultiple = <T>(sources: Multiple<T>, target: T[] | Set<T>) => {
+export const addMultiple = <T>(source: Multiple<T>, target: T[] | Set<T>) => {
 	if (Array.isArray(target)) {
 		const len = target.length;
-		for (const item of iterateMultiple(sources))
+		for (const item of iterateMultiple(source))
 			target.push(item);
 
 		return target.length - len;
 	}
 	else {
 		const size = target.size;
-		for (const item of iterateMultiple(sources))
+		for (const item of iterateMultiple(source))
 			target.add(item);
 
 		return target.size - size;
 	}
+};
+
+/**
+ * Add one or more `sources` of items to an existing `target` array or `Set`.
+ * @param source One or more sources of items.
+ * @param target The target to receive the items of the sources.
+ * @returns The number of items that were added.
+ */
+export const addMultiples = <T>(sources: Multiple<T>[], target: T[] | Set<T>) => {
+	let count = 0;
+	for (const source of sources)
+		count += addMultiple(source, target);
+
+	return count;
 };
