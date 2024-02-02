@@ -5,7 +5,7 @@ src/**/*.test.ts
 .vscode
 
 # No need for knowing what the build system did or how versioning happens.
-azure-pipelines.yml
+.github
 GitVersion.yml
 
 # No need to know how the dist content was generated.
