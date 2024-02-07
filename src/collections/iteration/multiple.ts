@@ -68,3 +68,15 @@ export const addMultiples = <T>(sources: Multiple<T>[], target: T[] | Set<T>) =>
 
 	return count;
 };
+
+/**
+ * Add one or more `sources` of items to an existing `target` array or `Set`.
+ * @param source One or more sources of items.
+ * @param target The target to receive the items of the sources.
+ * @returns The number of items that were added.
+ */
+export const combineMultiple = <T, Target extends T[] | Set<T>>(target: Target, ...sources: Multiple<T>[]): Target => {
+	addMultiples(sources, target);
+
+	return target;
+};
