@@ -1,5 +1,6 @@
 # No need for test code in the package.
 src/**/*.test.ts
+src/**/*.bench.ts
 
 # No need for vscode tooling info.
 .vscode
