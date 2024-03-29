@@ -45,34 +45,30 @@ When you want a function to be able to take a single or multiple items, the thre
 	logger(letterGenerator());
 	```
 
--	We also have a `spreadMultiple<T>(..)` utility which can be useful if you need to realize a `Multiple<T>` into a `T[]`. This might be needed if you need to loop more than once.
+-	We also have a `multipleToArray<T>(..)` and `multipleToSet<T>(..)` utility which can be useful if you need to realize a `Multiple<T>` into a `T[]` or `Set<T>`. This might be needed if you need to loop more than once.
 
 	```typescript
 	declare const multiple: Multiple<string>;
-	const realized: string[] = spreadMultiple(multiple);
+	const arr: string[]    = multipleToArray(multiple);
+	const set: Set<string> = multipleToSet(multiple);
 	```
 
--	Finally there is an `iterateAll(iterator: IterableIterator<T>)` utility which allow you to iterate through an iterable without using its results. This is a quick way to ensure that any side effects you rely on from the iterator are triggered even when you don't need its output.
+- Modification: For adding/removing one or more instances to a `target`.
 
+	Both of these will mutate and return the `target`.
 	```typescript
-	const letterGenerator = function*() {
-		yield 'a';
-		console.log('a');
-		yield 'b';
-		console.log('b');
-		yield 'c';
-		console.log('c');
-	};
-
-	// Performs the side effects of writing a b c to the console.
-	iterateAll(letterGenerator());
+	declare const target: Set<string> | string[];
+	declare const multiple1: Multiple<string>;
+	declare const multiple2: Multiple<string>;
+	addMultiple(target, multiple1, multiple2);
+	removeMultiple(target, multiple1, multiple2);
 	```
 
 ### Iteration: `Some<T>`
 
 Since, according to some benchmarking, generators are adding some significant performance overhead, we provide a simplified variant of `Multiple<T>` which is an array, a set or a single item, but not an iterable.
 
-Along with the type, we provide some utilities:
+Along with the type, we provide similar utilities:
 
 -	Transforms:
 	```typescript
@@ -88,7 +84,7 @@ Along with the type, we provide some utilities:
 	for (const s of iterateSome(some1, some2))
 		console.log(s);
 	```
-	Modification: For adding/removing one or more instances to a `target`.
+-	Modification: For adding/removing one or more instances to a `target`.
 
 	Both of these will mutate and return the `target`.
 	```typescript
@@ -99,6 +95,23 @@ Along with the type, we provide some utilities:
 	removeSome(target, some1, some2);
 	```
 
+### Iteration: Side effects
+
+There is an `iterateAll(iterator: IterableIterator<T>)` utility which allow you to iterate through an iterable without using its results. This is a quick way to ensure that any side effects you rely on from the iterator are triggered even when you don't need its output. You can achieve the same by spreading an iterator into an array, but that creates an unnecessary array.
+
+	```typescript
+	const letterGenerator = function*() {
+		yield 'a';
+		console.log('a');
+		yield 'b';
+		console.log('b');
+		yield 'c';
+		console.log('c');
+	};
+
+	// Performs the side effects of writing a b c to the console.
+	iterateAll(letterGenerator());
+	```
 
 ### Collections: `Stack<T>`, `Queue<T>` and `ILinear<T>`
 

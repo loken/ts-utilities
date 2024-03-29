@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { addMultiple, iterateMultiple, spreadMultiple } from '../../../src/collections/iteration/multiple.js';
+import { addMultiple, iterateMultiple, multipleToArray } from '../../../src/collections/iteration/multiple.js';
 
 describe('iterateMultiple', () => {
 	it('should iterate a single item', () => {
@@ -37,17 +37,17 @@ describe('iterateMultiple', () => {
 	});
 });
 
-describe('spreadMultiple', () => {
+describe('multipleToArray', () => {
 	it('should wrap a single item', () => {
 		const item = { a: 1 };
-		const result = spreadMultiple(item);
+		const result = multipleToArray(item);
 
 		expect(result).toEqual([ item ]);
 	});
 
 	it('should pass an array of items through by default', () => {
 		const items = [ { a: 1 }, { a: 2 } ];
-		const result = spreadMultiple(items);
+		const result = multipleToArray(items);
 
 		expect(result === items).true;
 	});
@@ -55,13 +55,13 @@ describe('spreadMultiple', () => {
 	it('should optionally spread an array of items into a new array', () => {
 		interface Item { a: number }
 		const items: Item[] = [ { a: 1 }, { a: 2 } ];
-		const result: Item[] = spreadMultiple(items, false);
+		const result: Item[] = multipleToArray(items, false);
 
 		expect(result !== items).true;
 	});
 
 	it('should spread a Set', () => {
-		const result = spreadMultiple(new Set([ 1, 2, 3 ]));
+		const result = multipleToArray(new Set([ 1, 2, 3 ]));
 
 		expect(result instanceof Set).toBeFalsy();
 		expect(result).toEqual([ 1, 2, 3 ]);
@@ -73,7 +73,7 @@ describe('spreadMultiple', () => {
 			yield { a: 2 };
 		}
 
-		const result = spreadMultiple(generateItems());
+		const result = multipleToArray(generateItems());
 
 		expect(result).toEqual([ { a: 1 }, { a: 2 } ]);
 	});
@@ -85,7 +85,7 @@ describe('addMultiple', () => {
 		const source = [ 1, 2, 3 ];
 		const target = [ 2, 7, 8 ];
 
-		addMultiple(source, target);
+		addMultiple(target, source);
 
 		expect(target).to.deep.equal([ 2, 7, 8, 1, 2, 3 ]);
 	});
@@ -94,8 +94,18 @@ describe('addMultiple', () => {
 		const source = new Set<number>([ 1, 2, 3 ]);
 		const target = new Set<number>([ 2, 7, 8 ]);
 
-		addMultiple(source, target);
+		addMultiple(target, source);
 
 		expect(target).to.have.keys([ 1, 2, 3, 7, 8 ]);
+	});
+
+	it('should work with several sources', () => {
+		const source1 = [ 1, 2, 3 ];
+		const source2 = [ 10, 20, 30 ];
+		const target = [ 2, 7, 8 ];
+
+		addMultiple(target, source1, source2);
+
+		expect(target).to.deep.equal([ 2, 7, 8, 1, 2, 3, 10, 20, 30 ]);
 	});
 });

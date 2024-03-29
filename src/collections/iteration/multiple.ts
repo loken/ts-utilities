@@ -1,31 +1,50 @@
 /** One or more instances of `T`. */
 export type Multiple<T> = T | T[] | Set<T> | IterableIterator<T>;
 
+
 /**
  * Iterate multiple `sources`.
  *
  * The benefit is to hide the complexity of the variations in
  * format of the `sources` at the call site.
- * @param sources One or more sources.
+ * @param source One or more sources.
  */
-export function* iterateMultiple<T>(sources: Multiple<T>): Generator<T> {
-	if (typeof sources === 'object' && sources !== null && Symbol.iterator in sources) {
-		for (const source of sources)
+export function* iterateMultiple<T>(...sources: Multiple<T>[]): Generator<T> {
+	for (const source of sources) {
+		if (typeof source === 'object' && source !== null && Symbol.iterator in source) {
+			for (const s of source)
+				yield s;
+		}
+		else {
 			yield source;
-	}
-	else {
-		yield sources;
+		}
 	}
 }
+
+
+/**
+ * Turn multiple `sources` into an iterable with the least amount of modification.
+ *
+ * This means return it as it is unless it's a single item, in which case, wrap it in an array,
+ * or if it's an iterator, spread it into an array.
+ */
+export const multipleToIterable = <T>(sources: Multiple<T>): T[] | Set<T> | IterableIterator<T> => {
+	if (Array.isArray(sources) || sources instanceof Set)
+		return sources;
+	if (typeof sources === 'object' && sources !== null && Symbol.iterator in sources)
+		return sources;
+	else
+		return [ sources ];
+};
 
 /**
  * Spread multiple `sources` into an array.
  * @param sources One or more sources.
  * @param reuseArray When the `sources` is already an array, should we reuse it (true) or spread into a clone (false)?
  */
-export const spreadMultiple = <T>(sources: Multiple<T>, reuseArray = true): T[] => {
-	if (reuseArray && Array.isArray(sources))
-		return sources;
+export const multipleToArray = <T>(sources: Multiple<T>, reuseArray = true): T[] => {
+	if (Array.isArray(sources))
+		return reuseArray ? sources : [ ...sources ];
 	if (typeof sources === 'object' && sources !== null && Symbol.iterator in sources)
 		return [ ...sources ];
 	else
@@ -33,50 +52,71 @@ export const spreadMultiple = <T>(sources: Multiple<T>, reuseArray = true): T[] 
 };
 
 /**
- * Add one or more `source` items to an existing `target` array or `Set`.
+ * Spread multiple `sources` into an array.
+ * @param sources One or more sources.
+ * @param reuseArray When the `sources` is already an array, should we reuse it (true) or spread into a clone (false)?
+ */
+export const multipleToSet = <T>(sources: Multiple<T>, reuseSet = true): Set<T> => {
+	if (Array.isArray(sources))
+		return new Set(sources);
+	if (sources instanceof Set)
+		return reuseSet ? sources : new Set(sources);
+	if (typeof sources === 'object' && sources !== null && Symbol.iterator in sources)
+		return new Set([ ...sources ]);
+	else
+		return new Set([ sources ]);
+};
+
+
+/**
+ * Add one or more `sources`, or several such sources, to an existing `target` array or `Set`.
  * @param source One or more source items.
  * @param target The target to receive the source items.
  * @returns The number of items that were added.
  */
-export const addMultiple = <T>(source: Multiple<T>, target: T[] | Set<T>) => {
+export const addMultiple = <T, Target extends T[] | Set<T>>(target: Target, ...sources: Multiple<T>[]): Target => {
 	if (Array.isArray(target)) {
-		const len = target.length;
-		for (const item of iterateMultiple(source))
-			target.push(item);
-
-		return target.length - len;
+		for (const source of sources) {
+			if (typeof source === 'object' && source !== null && Symbol.iterator in source)
+				target.push(...source);
+			else
+				target.push(source);
+		}
 	}
 	else {
-		const size = target.size;
-		for (const item of iterateMultiple(source))
-			target.add(item);
-
-		return target.size - size;
+		for (const source of sources) {
+			if (typeof source === 'object' && source !== null && Symbol.iterator in source) {
+				for (const s of source)
+					target.add(s);
+			}
+			else {
+				target.add(source);
+			}
+		}
 	}
+
+	return target;
 };
 
 /**
- * Add one or more `sources` of items to an existing `target` array or `Set`.
- * @param source One or more sources of items.
- * @param target The target to receive the items of the sources.
- * @returns The number of items that were added.
+ * Remove one or more `sources`, or several such sources, from an existing `target` array, `Set` or `Map`.
+ * @param source One or more sources.
+ * @param target The target from which to remove the sources.
+ * @returns The mutated target.
  */
-export const addMultiples = <T>(sources: Multiple<T>[], target: T[] | Set<T>) => {
-	let count = 0;
-	for (const source of sources)
-		count += addMultiple(source, target);
-
-	return count;
-};
-
-/**
- * Add one or more `sources` of items to an existing `target` array or `Set`.
- * @param source One or more sources of items.
- * @param target The target to receive the items of the sources.
- * @returns The number of items that were added.
- */
-export const combineMultiple = <T, Target extends T[] | Set<T>>(target: Target, ...sources: Multiple<T>[]): Target => {
-	addMultiples(sources, target);
+export const removeMultiple = <T, Target extends T[] | Set<T> | Map<T, any>>(target: Target, ...sources: Multiple<T>[]): Target => {
+	if (Array.isArray(target)) {
+		const allSources = addMultiple(new Set<T>(), ...sources);
+		for (let i = target.length - 1; i >= 0; i--) {
+			const tar = target[i]!;
+			if (allSources.has(tar))
+				target.splice(i, 1);
+		}
+	}
+	else {
+		for (const s of iterateMultiple(...sources))
+			target.delete(s);
+	}
 
 	return target;
 };
