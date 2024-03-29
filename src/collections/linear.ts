@@ -1,9 +1,9 @@
 import { type TryResult } from '../patterns/try.js';
-import { type Multiple } from './iteration/multiple.js';
+import type { Some } from './iteration/some.js';
 
 export interface ILinear<T> {
 	readonly count: number;
-	attach(items: Multiple<T>): number;
+	attach(items: Some<T>): number;
 	detach(): T;
 	tryDetach(): TryResult<T>;
 	peek(): T;

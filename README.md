@@ -104,7 +104,7 @@ Along with the type, we provide some utilities:
 
 In computer science the data structures for a stack and a queue where you can `push()` and `pop()` or `enqueue()` and `dequeue()`, respectively. We provide classes for these data structures. There's not much point in showing how they're used - it's idiomatic.
 
-The only exception is that `push()` and `enqueue()` takes `Multiple<T>` rather than a single item, which is quite convenient.
+The only exception is that `push()` and `enqueue()` takes `Some<T>` rather than a single item, which is quite convenient.
 
 Sometimes you have an algorithm which behaves well regardless of it using a stack or a queue, however. And in those cases it would be nice to not have to check everywhere if we're using a stack or a queue before we use it.
 

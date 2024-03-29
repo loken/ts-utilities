@@ -1,5 +1,5 @@
 import { type TryResult, tryResult } from '../patterns/try.js';
-import { iterateMultiple, type Multiple } from './iteration/multiple.js';
+import { type Some, someToIterable } from './iteration/some.js';
 import { type ILinear } from './linear.js';
 
 export class Queue<T> {
@@ -12,10 +12,10 @@ export class Queue<T> {
 		return this.#tail - this.#head;
 	}
 
-	public enqueue(items: Multiple<T>): number {
+	public enqueue(items: Some<T>): number {
 		let count = 0;
 
-		for (const item of iterateMultiple(items)) {
+		for (const item of someToIterable(items)) {
 			this.#queue.set(this.#tail++, item);
 			count++;
 		}
@@ -67,7 +67,7 @@ export class Queue<T> {
 
 export class LinearQueue<T> extends Queue<T> implements ILinear<T> {
 
-	public attach(items: Multiple<T>): number {
+	public attach(items: Some<T>): number {
 		return super.enqueue(items);
 	}
 

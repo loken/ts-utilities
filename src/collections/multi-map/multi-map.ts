@@ -1,6 +1,6 @@
 import { splitBy, splitKvp } from '../../primitives/string/splitting.js';
 import { getTrim, trimBy } from '../../primitives/string/trimming.js';
-import { addMultiple, iterateMultiple, type Multiple } from '../iteration/multiple.js';
+import { addSome, iterateSome, type Some } from '../iteration/some.js';
 import { mapGetLazy } from '../map.js';
 import { type MultiMapParsing, type MultiMapRendering, type MultiMapSeparators, type MultiMapTrim } from './multi-map-types.js';
 
@@ -28,10 +28,13 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param values The values to add.
 	 * @returns The number of values that were added.
 	 */
-	public add(key: T, values: Multiple<T>): number {
+	public add(key: T, values: Some<T>): number {
 		const set = this.getOrAdd(key);
+		const size = set.size;
 
-		return addMultiple(values, set);
+		addSome(set, values);
+
+		return set.size - size;
 	}
 
 	/**
@@ -42,12 +45,12 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param values The values to remove.
 	 * @returns The subset of `values` that were previously in the `Set`.
 	 */
-	public remove(key: T, values: Multiple<T>): T[] {
+	public remove(key: T, values: Some<T>): T[] {
 		const set = this.getOrAdd(key);
 
 		const removed: T[] = [];
 
-		for (const value of iterateMultiple(values)) {
+		for (const value of iterateSome(values)) {
 			if (set.delete(value))
 				removed.push(value);
 		}

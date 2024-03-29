@@ -1,4 +1,4 @@
-import { type Multiple, spreadMultiple } from '../../collections/iteration/multiple.js';
+import { type Some, someToArray } from '../../collections/iteration/some.js';
 
 
 /**
@@ -20,9 +20,9 @@ export class StringDefaults {
 	 * When some `separators` are provided as an arg, return them, otherwise return the defaults.
 	 * @param separators Optional separators to use instead of the defaults.
 	 */
-	public static getSeparators(separators?: Multiple<string>): string[] {
+	public static getSeparators(separators?: Some<string>): string[] {
 		return separators !== undefined
-			? spreadMultiple(separators)
+			? someToArray(separators)
 			: [ ...StringDefaults.separators ];
 	}
 

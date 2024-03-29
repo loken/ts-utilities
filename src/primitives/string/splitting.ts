@@ -1,5 +1,5 @@
 
-import { type Multiple } from '../../collections/iteration/multiple.js';
+import type { Some } from '../../collections/iteration/some.js';
 import { StringDefaults } from './defaults.js';
 import { escapeRegex } from './regex.js';
 import { trimBy, type TrimDir } from './trimming.js';
@@ -11,7 +11,7 @@ export type Kvp<K, V = K> = readonly [key: K, value: V | null];
 /** Describes how to split a string. */
 export interface SplitOptions {
 	/** One or more separators to use. Default: `DefaultStrings.separators` */
-	sep?: Multiple<string>,
+	sep?: Some<string>,
 	/** Should we `'keep'` or `'remove'` empty strings? Default: `'remove'`. */
 	empty?: 'keep' | 'remove',
 	/** Should we trim each returned segment? (Default: No trimming.) */
