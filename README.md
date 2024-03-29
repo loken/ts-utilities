@@ -68,6 +68,37 @@ When you want a function to be able to take a single or multiple items, the thre
 	iterateAll(letterGenerator());
 	```
 
+### Iteration: `Some<T>`
+
+Since, according to some benchmarking, generators are adding some significant performance overhead, we provide a simplified variant of `Multiple<T>` which is an array, a set or a single item, but not an iterable.
+
+Along with the type, we provide some utilities:
+
+-	Transforms:
+	```typescript
+	declare const some: Some<string>;
+	someToIterable(some);
+	someToArray(some);
+	someToSet(some);
+	```
+-	Iterators: For iterating one or more instances:
+	```typescript
+	declare const some1: Some<string>;
+	declare const some2: Some<string>;
+	for (const s of iterateSome(some1, some2))
+		console.log(s);
+	```
+	Modification: For adding/removing one or more instances to a `target`.
+
+	Both of these will mutate and return the `target`.
+	```typescript
+	declare const target: Set<string> | string[];
+	declare const some1: Some<string>;
+	declare const some2: Some<string>;
+	addSome(target, some1, some2);
+	removeSome(target, some1, some2);
+	```
+
 
 ### Collections: `Stack<T>`, `Queue<T>` and `ILinear<T>`
 
