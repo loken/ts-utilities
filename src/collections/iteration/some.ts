@@ -69,7 +69,7 @@ export const someToSet = <T>(sources: Some<T>, reuseSet = true): Set<T> => {
  * @param target The target to receive the sources.
  * @returns The mutated target.
  */
-export const addSome = <T>(target: T[] | Set<T>, ...sources: Some<T>[]) => {
+export const addSome = <T, Target extends T[] | Set<T>>(target: Target, ...sources: Some<T>[]): Target => {
 	if (Array.isArray(target)) {
 		for (const source of sources) {
 			if (Array.isArray(source) || source instanceof Set)
@@ -94,12 +94,12 @@ export const addSome = <T>(target: T[] | Set<T>, ...sources: Some<T>[]) => {
 };
 
 /**
- * Remove one or more `sources`, or several such sources, from an existing `target` array or `Set`.
+ * Remove one or more `sources`, or several such sources, from an existing `target` array, `Set` or `Map`.
  * @param source One or more sources.
  * @param target The target from which to remove the sources.
  * @returns The mutated target.
  */
-export const removeSome = <T>(target: T[] | Set<T> | Map<T, any>, ...sources: Some<T>[]) => {
+export const removeSome = <T, Target extends T[] | Set<T> | Map<T, any>>(target: Target, ...sources: Some<T>[]): Target => {
 	if (Array.isArray(target)) {
 		for (let i = target.length - 1; i >= 0; i--) {
 			const tar = target[i]!;
