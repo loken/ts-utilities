@@ -12,6 +12,20 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 
 	//#region set management.
 	/**
+	 * Get a set of all keys and values in the multi map.
+	 */
+	public getAll() {
+		const all = new Set<T>();
+
+		for (const [ key, values ] of this) {
+			all.add(key);
+			addSome(all, values);
+		}
+
+		return all;
+	}
+
+	/**
 	 * Get the `Set` at the `key` if it already exists or add and return an empty `Set` otherwise.
 	 * @param key The map key.
 	 * @returns The `Set<T>` that already existed or was added.
