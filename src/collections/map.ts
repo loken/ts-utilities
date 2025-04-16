@@ -27,3 +27,31 @@ export const mapGetLazy = <TKey, TValue>(
 
 	return val;
 };
+
+/**
+ * Get a `Set<TValue>` from the `map`, and add it first if it doesn't already exist in the map.
+ * @param map - The map containing values.
+ * @param key - The key to use when retrieving a value.
+ * @param retrieveAction - An optional action to perform on the value when it already exists in the map.
+ */
+export const mapGetLazySet = <TKey, TValue>(
+	map: Map<TKey, Set<TValue>>,
+	key: TKey,
+	retrieveAction?: (value: Set<TValue>) => void,
+) => {
+	return mapGetLazy(map, key, () => new Set<TValue>(), retrieveAction);
+};
+
+/**
+ * Get a `Map<MKey, MValue>` from the `map`, and add it first if it doesn't already exist in the map.
+ * @param map - The map containing values.
+ * @param key - The key to use when retrieving a value.
+ * @param retrieveAction - An optional action to perform on the value when it already exists in the map.
+ */
+export const mapGetLazyMap = <TKey, MKey, MValue>(
+	map: Map<TKey, Map<MKey, MValue>>,
+	key: TKey,
+	retrieveAction?: (value: Map<MKey, MValue>) => void,
+) => {
+	return mapGetLazy(map, key, () => new Map<MKey, MValue>(), retrieveAction);
+};
