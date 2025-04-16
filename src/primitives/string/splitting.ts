@@ -11,13 +11,13 @@ export type Kvp<K, V = K> = readonly [key: K, value: V | null];
 /** Describes how to split a string. */
 export interface SplitOptions {
 	/** One or more separators to use. Default: `DefaultStrings.separators` */
-	sep?: Some<string>,
+	sep?:   Some<string>,
 	/** Should we `'keep'` or `'remove'` empty strings? Default: `'remove'`. */
 	empty?: 'keep' | 'remove',
 	/** Should we trim each returned segment? (Default: No trimming.) */
-	trim?: TrimDir,
+	trim?:  TrimDir,
 	/** The maximum number of segments to keep when splitting. This is prior to filtering empty segments! */
-	max?: number,
+	max?:   number,
 }
 
 

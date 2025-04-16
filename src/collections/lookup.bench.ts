@@ -26,7 +26,7 @@ counts.forEach(count => {
 });
 
 counts.forEach(count => {
-	const arr: {key: number, value: string}[] = [];
+	const arr: { key: number, value: string }[] = [];
 	const map = new Map<number, string>();
 	for (let i = 1; i < count + 1; i++) {
 		arr.push({ key: i, value: 'x' + i });

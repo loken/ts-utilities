@@ -21,7 +21,7 @@ export const splitLines = (input: string, options?: Omit<SplitOptions, 'sep' | '
 };
 
 /** Trim the `input` and its lines according to the `direction` and remove any empty lines. */
-export const trimLines = (input: string, direction: TrimDir | {input: TrimDir, lines: TrimDir} = { input: 'both', lines: 'start' }) => {
+export const trimLines = (input: string, direction: TrimDir | { input: TrimDir, lines: TrimDir } = { input: 'both', lines: 'start' }) => {
 	const trim: LinesTrim = {
 		input: typeof direction === 'string' ? direction : direction.input,
 		lines: typeof direction === 'string' ? direction : direction.lines,

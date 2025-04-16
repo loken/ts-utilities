@@ -14,13 +14,13 @@ export interface MultiMapRendering<T> extends MultiMapSeparators {
 /** How to trim each part of the `input` parsed into a `MultiMap`. */
 export interface MultiMapTrim {
 	/** How to trim the whole `input`? */
-	input?: TrimDir,
+	input?:   TrimDir,
 	/** How to trim each `entry`? */
 	entries?: TrimDir,
 	/** How to trim each of the `keys`? */
-	keys?: TrimDir,
+	keys?:    TrimDir,
 	/** How to trim each of the `values`? */
-	values?: TrimDir,
+	values?:  TrimDir,
 }
 
 /** How to parse the `input` into a `MultiMap`. */
@@ -44,7 +44,7 @@ export interface MultiMapParsing<T> extends MultiMapSeparators {
 	 *
 	 * If you don't want any trimming, use `'none'` instead.
 	 */
-	trim?: TrimDir | MultiMapTrim,
+	trim?:      TrimDir | MultiMapTrim,
 }
 
 /**
@@ -55,13 +55,13 @@ export interface MultiMapParsing<T> extends MultiMapSeparators {
  */
 export interface MultiMapSeparators {
 	/** The separator for each entry, which represent a `Kvp`. Default: `'\n'`. */
-	entry?: string,
+	entry?:    string,
 	/** The separator between the entry key and entry values. Default: `':'`. */
 	keyValue?: string,
 	/** The separator between each entry value. Default: `','`. */
-	value?: string,
+	value?:    string,
 	/** Prefix before the first entry. */
-	prefix?: string,
+	prefix?:   string,
 	/** Suffix after the last entry. */
-	suffix?: string,
+	suffix?:   string,
 }
