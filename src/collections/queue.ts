@@ -1,66 +1,73 @@
 import { type TryResult, tryResult } from '../patterns/try.js';
-import { type Some, someToIterable } from './iteration/some.js';
+import { addSome, type Some } from './iteration/some.js';
 import { type ILinear } from './linear.js';
 
 export class Queue<T> {
 
-	#queue = new Map<number, T>();
+	public static cleanupThreshold = 4096;
+
+	#queue: T[] = [];
 	#head = 0;
-	#tail = 0;
 
 	public get count() {
-		return this.#tail - this.#head;
+		return this.#queue.length - this.#head;
 	}
 
 	public enqueue(items: Some<T>): number {
-		let count = 0;
+		const len = this.#queue.length;
 
-		for (const item of someToIterable(items)) {
-			this.#queue.set(this.#tail++, item);
-			count++;
-		}
+		addSome(this.#queue, items);
 
-		return count;
+		return this.#queue.length - len;
 	}
 
 	public dequeue(): T {
-		if (this.#tail === this.#head)
+		if (this.#queue.length === this.#head)
 			throw new Error('No more items in queue!');
 
-		const item = this.#queue.get(this.#head)!;
-		this.#queue.delete(this.#head++);
+		const item = this.#queue.at(this.#head)!;
+		delete this.#queue[this.#head++];
+
+		if (this.#head >= Queue.cleanupThreshold) {
+			this.#queue = this.#queue.slice(this.#head);
+			this.#head = 0;
+		}
 
 		return item;
 	}
 
 	public tryDequeue(): TryResult<T> {
-		if (this.#tail === this.#head)
+		if (this.#queue.length === this.#head)
 			return tryResult.fail();
 
-		const item = this.#queue.get(this.#head)!;
-		this.#queue.delete(this.#head++);
+		const item = this.#queue.at(this.#head)!;
+		delete this.#queue[this.#head++];
+
+		if (this.#head >= Queue.cleanupThreshold) {
+			this.#queue = this.#queue.slice(this.#head);
+			this.#head = 0;
+		}
 
 		return tryResult.succeed(item);
 	}
 
 	public peek(): T {
-		if (this.#tail === this.#head)
+		if (this.#queue.length === this.#head)
 			throw new Error('No more items in queue!');
 
-		return this.#queue.get(this.#head)!;
+		return this.#queue.at(this.#head)!;
 	}
 
 	public tryPeek(): TryResult<T> {
-		if (this.#tail === this.#head)
+		if (this.#queue.length === this.#head)
 			return tryResult.fail();
 
-		return tryResult.succeed(this.#queue.get(this.#head)!);
+		return tryResult.succeed(this.#queue.at(this.#head)!);
 	}
 
 	public clear(): void {
-		this.#queue.clear();
+		this.#queue.length = 0;
 		this.#head = 0;
-		this.#tail = 0;
 	}
 
 }
