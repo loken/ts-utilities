@@ -127,3 +127,31 @@ export const inSome = <T>(item: T, some: Some<T>) => {
 	else
 		return item === some;
 };
+
+
+/**
+ * Check whether `some` is an array or a Set.
+ */
+export const isSomeIterable = <T>(some: Some<T>): some is T[] | Set<T> => {
+	return Array.isArray(some) || some instanceof Set;
+};
+
+/**
+ * Check whether `some` is a single item.
+ */
+export const isSomeItem = <T>(some: Some<T>): some is T => {
+	return !Array.isArray(some) && some instanceof Set === false;
+};
+
+
+/**
+ * Get the number of items in `some`.
+ */
+export const countSome = <T>(some: Some<T>) => {
+	if (Array.isArray(some))
+		return some.length;
+	else if (some instanceof Set)
+		return some.size;
+	else
+		return 1;
+};

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Stack } from '../../src/collections/stack.js';
+import { Stack } from './stack.js';
 
 describe('stack', () => {
 	it('should be last-in-first-out (LIFO)', () => {
