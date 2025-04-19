@@ -5,7 +5,9 @@ import { type ILinear } from './linear.js';
 export class Queue<T = any> {
 
 	/** The initial capacity. */
-	private readonly capacity: number;
+	public readonly initialCapacity: number;
+	/** The current capacity. */
+	public get capacity() { return this.buffer.length; }
 
 	/** A monotonically increasing array of items, serving as a ring buffer. */
 	private buffer: (T | undefined)[];
@@ -23,7 +25,7 @@ export class Queue<T = any> {
 		if (capacity < 1)
 			throw new Error('Capacity must be greater than zero!');
 
-		this.capacity = capacity;
+		this.initialCapacity = capacity;
 		this.buffer = new Array<T>(capacity);
 	}
 
@@ -60,62 +62,140 @@ export class Queue<T = any> {
 		return itemCount;
 	}
 
-	public dequeue(): T {
-		if (this.num === 0)
-			throw new Error('No more items in queue!');
+	public dequeue<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		if (count === undefined) {
+			if (this.num === 0)
+				throw new Error('No more items in queue!');
 
-		const item = this.buffer[this.head]!;
-		this.buffer[this.head++] = undefined;
+			const item = this.buffer[this.head]!;
+			this.buffer[this.head++] = undefined;
 
-		this.num--;
+			this.num--;
+
+			if (this.num === 0) {
+				this.head = 0;
+				this.tail = 0;
+			}
+			else if (this.head === this.buffer.length) {
+				this.head = 0;
+			}
+
+			return item as any;
+		}
+
+		if (count > this.num)
+			throw new Error('Not enough items in queue!');
+
+		const items: T[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(this.buffer[this.head]!);
+			this.buffer[this.head++] = undefined;
+
+			if (this.head === this.buffer.length)
+				this.head = 0;
+		}
+
+		this.num -= count;
 
 		if (this.num === 0) {
 			this.head = 0;
 			this.tail = 0;
 		}
-		else if (this.head === this.buffer.length) {
-			this.head = 0;
-		}
 
-		return item;
+		return items as any;
 	}
 
-	public tryDequeue(): TryResult<T> {
-		if (this.num === 0)
+	public tryDequeue<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T> {
+		if (count === undefined) {
+			if (this.num === 0)
+				return tryResult.fail();
+
+			const item = this.buffer[this.head]!;
+			this.buffer[this.head++] = undefined;
+
+			this.num--;
+
+			if (this.num === 0) {
+				this.head = 0;
+				this.tail = 0;
+			}
+			else if (this.head === this.buffer.length) {
+				this.head = 0;
+			}
+
+			return tryResult.succeed(item) as any;
+		}
+
+		if (count > this.num)
 			return tryResult.fail();
 
-		const item = this.buffer[this.head]!;
-		this.buffer[this.head++] = undefined;
+		const items: T[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(this.buffer[this.head]!);
+			this.buffer[this.head++] = undefined;
 
-		this.num--;
+			if (this.head === this.buffer.length)
+				this.head = 0;
+		}
+
+		this.num -= count;
 
 		if (this.num === 0) {
 			this.head = 0;
 			this.tail = 0;
 		}
-		else if (this.head === this.buffer.length) {
-			this.head = 0;
+
+		return tryResult.succeed(items) as any;
+	}
+
+	public peek<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		if (count === undefined) {
+			if (this.num === 0)
+				throw new Error('No more items in queue!');
+
+			return this.buffer[this.head]! as any;
 		}
 
-		return tryResult.succeed(item);
+		if (count > this.num)
+			throw new Error('Not enough items in queue!');
+
+		const items: T[] = [];
+		const len = this.buffer.length;
+		for (let i = 0; i < count; i++)
+			items.push(this.buffer[(this.head + i % len)]!);
+
+		return items as any;
 	}
 
-	public peek(): T {
-		if (this.num === 0)
-			throw new Error('No more items in queue!');
+	public tryPeek<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T> {
+		if (count === undefined) {
+			if (this.num === 0)
+				return tryResult.fail();
 
-		return this.buffer[this.head]!;
-	}
+			return tryResult.succeed(this.buffer[this.head]!) as any;
+		}
 
-	public tryPeek(): TryResult<T> {
-		if (this.num === 0)
+		if (count > this.num)
 			return tryResult.fail();
 
-		return tryResult.succeed(this.buffer[this.head]!);
+		const items: T[] = [];
+		const len = this.buffer.length;
+		for (let i = 0; i < count; i++)
+			items.push(this.buffer[(this.head + i % len)]!);
+
+		return tryResult.succeed(items) as any;
 	}
 
 	public clear(): void {
-		this.buffer = new Array<T>(this.capacity);
+		this.buffer = new Array<T>(this.initialCapacity);
 		this.head = 0;
 		this.tail = 0;
 		this.num = 0;
@@ -164,12 +244,16 @@ export class LinearQueue<T> extends Queue<T> implements ILinear<T> {
 		return super.enqueue(items);
 	}
 
-	public detach(): T {
-		return super.dequeue();
+	public detach<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		return super.dequeue(count);
 	}
 
-	public tryDetach(): TryResult<T> {
-		return super.tryDequeue();
+	public tryDetach<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T> {
+		return super.tryDequeue(count);
 	}
 
 }

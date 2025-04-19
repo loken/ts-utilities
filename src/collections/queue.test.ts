@@ -145,16 +145,13 @@ describe('queue', () => {
 
 	it('should handle enqueueing and dequeueing with mixed data types', () => {
 		const queue = new Queue<any>();
+		const expected = [ 1, 'two', { three: 3 }, [ 4 ] ];
 
-		queue.enqueue([ 1, 'two', { three: 3 }, [ 4 ] ]);
-
+		queue.enqueue(expected);
 		expect(queue.count).toBe(4);
 
-		expect(queue.dequeue()).toBe(1);
-		expect(queue.dequeue()).toBe('two');
-		expect(queue.dequeue()).toEqual({ three: 3 });
-		expect(queue.dequeue()).toEqual([ 4 ]);
-
+		const actual = queue.dequeue(4);
+		expect(actual).toEqual(expected);
 		expect(queue.count).toBe(0);
 	});
 
@@ -178,10 +175,9 @@ describe('queue', () => {
 		const dequeueResults: number[] = [];
 
 		// Simulate concurrent enqueue and dequeue
-		enqueueItems.forEach(item => queue.enqueue([ item ]));
+		enqueueItems.forEach(item => queue.enqueue(item));
 		while (queue.count > 0)
 			dequeueResults.push(queue.dequeue());
-
 
 		expect(dequeueResults).toEqual(enqueueItems);
 	});
@@ -196,12 +192,13 @@ describe('queue', () => {
 	it('should handle enqueueing null or undefined values', () => {
 		const queue = new Queue<any>();
 
-		queue.enqueue([ null, undefined ]);
+		const expected = [ null, undefined ];
+		queue.enqueue(expected);
 
 		expect(queue.count).toBe(2);
 
-		expect(queue.dequeue()).toBe(null);
-		expect(queue.dequeue()).toBe(undefined);
+		const actual = queue.dequeue(2);
+		expect(actual).toEqual(expected);
 
 		expect(queue.count).toBe(0);
 	});

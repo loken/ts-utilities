@@ -10,11 +10,9 @@ describe('stack', () => {
 
 		expect(stack.count).toBe(2);
 
-		const a = stack.pop();
-		const b = stack.pop();
-
-		expect(a).toBe('two');
-		expect(b).toBe('one');
+		const actual = stack.pop(2);
+		expect(actual).toEqual([ 'two', 'one' ]);
+		expect(stack.count).toBe(0);
 	});
 
 	it('should handle empty state correctly', () => {
@@ -42,12 +40,10 @@ describe('stack', () => {
 		expect(stack.count).toBe(2);
 
 		stack.push(3); // Trigger resize
-
 		expect(stack.count).toBe(3);
-		expect(stack.pop()).toBe(3);
-		expect(stack.pop()).toBe(2);
-		expect(stack.pop()).toBe(1);
 
+		const items321 = stack.pop(3);
+		expect(items321).toEqual([ 3, 2, 1 ]);
 		expect(stack.count).toBe(0);
 	});
 
@@ -69,19 +65,15 @@ describe('stack', () => {
 		const stack = new Stack<number>();
 
 		stack.push([ 1, 2 ]);
-
 		expect(stack.pop()).toBe(2);
 
 		stack.push([ 3, 4 ]);
-
 		expect(stack.pop()).toBe(4);
 		expect(stack.pop()).toBe(3);
 
 		stack.push(5);
-
 		expect(stack.pop()).toBe(5);
 		expect(stack.pop()).toBe(1);
-
 		expect(stack.count).toBe(0);
 	});
 
@@ -89,14 +81,9 @@ describe('stack', () => {
 		const stack = new Stack<any>();
 
 		stack.push([ 1, 'two', { three: 3 }, [ 4 ] ]);
-
 		expect(stack.count).toBe(4);
 
-		expect(stack.pop()).toEqual([ 4 ]);
-		expect(stack.pop()).toEqual({ three: 3 });
-		expect(stack.pop()).toBe('two');
-		expect(stack.pop()).toBe(1);
-
+		expect(stack.pop(4)).toEqual([ [ 4 ], { three: 3 }, 'two', 1 ]);
 		expect(stack.count).toBe(0);
 	});
 
@@ -108,7 +95,6 @@ describe('stack', () => {
 		expect(stack.count).toBe(3);
 
 		stack.clear();
-
 		expect(stack.count).toBe(0);
 		expect(() => stack.pop()).toThrow('No more items in stack!');
 	});
@@ -124,12 +110,9 @@ describe('stack', () => {
 		const stack = new Stack<any>();
 
 		stack.push([ null, undefined ]);
-
 		expect(stack.count).toBe(2);
 
-		expect(stack.pop()).toBe(undefined);
-		expect(stack.pop()).toBe(null);
-
+		expect(stack.pop(2)).toEqual([ undefined, null ]);
 		expect(stack.count).toBe(0);
 	});
 });
