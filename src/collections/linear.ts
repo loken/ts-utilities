@@ -11,14 +11,14 @@ export interface ILinear<T> {
 	): Count extends number ? T[] : T;
 	tryDetach<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T>;
+	): TryResult<Count extends number ? T[] : T, string>;
 
 	peek<Count extends number | undefined = undefined>(
 		count?: Count,
 	): Count extends number ? T[] : T;
 	tryPeek<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T>;
+	): TryResult<Count extends number ? T[] : T, string>;
 	clear(): void;
 
 }

@@ -109,10 +109,10 @@ export class Queue<T = any> {
 
 	public tryDequeue<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		if (count === undefined) {
 			if (this.num === 0)
-				return tryResult.fail();
+				return tryResult.fail('No more items in queue!');
 
 			const item = this.buffer[this.head]!;
 			this.buffer[this.head++] = undefined;
@@ -131,7 +131,7 @@ export class Queue<T = any> {
 		}
 
 		if (count > this.num)
-			return tryResult.fail();
+			return tryResult.fail('Not enough items in queue!');
 
 		const items: T[] = [];
 		for (let i = 0; i < count; i++) {
@@ -175,16 +175,16 @@ export class Queue<T = any> {
 
 	public tryPeek<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		if (count === undefined) {
 			if (this.num === 0)
-				return tryResult.fail();
+				return tryResult.fail('No more items in queue!');
 
 			return tryResult.succeed(this.buffer[this.head]!) as any;
 		}
 
 		if (count > this.num)
-			return tryResult.fail();
+			return tryResult.fail('Not enough items in queue!');
 
 		const items: T[] = [];
 		const len = this.buffer.length;
@@ -252,7 +252,7 @@ export class LinearQueue<T> extends Queue<T> implements ILinear<T> {
 
 	public tryDetach<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		return super.tryDequeue(count);
 	}
 

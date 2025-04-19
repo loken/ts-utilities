@@ -68,10 +68,10 @@ export class Stack<T = any> {
 
 	public tryPop<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		if (count === undefined) {
 			if (this.head === 0)
-				return tryResult.fail();
+				return tryResult.fail('No more items in stack!');
 
 			const item = this.buffer[--this.head]!;
 			this.buffer[this.head] = undefined;
@@ -80,7 +80,7 @@ export class Stack<T = any> {
 		}
 
 		if (count > this.head)
-			return tryResult.fail();
+			return tryResult.fail('Not enough items in stack!');
 
 		const items: T[] = [];
 		for (let i = 0; i < count; i++) {
@@ -113,16 +113,16 @@ export class Stack<T = any> {
 
 	public tryPeek<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		if (count === undefined) {
 			if (this.head === 0)
-				return tryResult.fail();
+				return tryResult.fail('No more items in stack!');
 
 			return tryResult.succeed(this.buffer[this.head - 1]!) as any;
 		}
 
 		if (count > this.head)
-			return tryResult.fail();
+			return tryResult.fail('Not enough items in stack!');
 
 		const items: T[] = [];
 		for (let i = 0; i < count; i++)
@@ -163,7 +163,7 @@ export class LinearStack<T> extends Stack<T> implements ILinear<T> {
 
 	public tryDetach<Count extends number | undefined = undefined>(
 		count?: Count,
-	): TryResult<Count extends number ? T[] : T> {
+	): TryResult<Count extends number ? T[] : T, string> {
 		return super.tryPop(count);
 	}
 
