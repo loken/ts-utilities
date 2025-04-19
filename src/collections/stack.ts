@@ -2,7 +2,7 @@ import { type TryResult, tryResult } from '../patterns/try.js';
 import { isSomeItem, type Some } from './iteration/some.js';
 import { type ILinear } from './linear.js';
 
-export class Stack<T> {
+export class Stack<T = any> {
 
 	/** The initial capacity. */
 	private readonly capacity: number;
