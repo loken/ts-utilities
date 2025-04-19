@@ -2,10 +2,12 @@ import { type TryResult, tryResult } from '../patterns/try.js';
 import { isSomeItem, type Some } from './iteration/some.js';
 import { type ILinear } from './linear.js';
 
-export class Stack<T> {
+export class Stack<T = any> {
 
 	/** The initial capacity. */
-	private readonly capacity: number;
+	public readonly initialCapacity: number;
+	/** The current capacity. */
+	public get capacity() { return this.buffer.length; }
 
 	/** A monotonically increasing array of items. */
 	private buffer: (T | undefined)[];
@@ -19,7 +21,7 @@ export class Stack<T> {
 		if (capacity < 1)
 			throw new Error('Capacity must be greater than zero!');
 
-		this.capacity = capacity;
+		this.initialCapacity = capacity;
 		this.buffer = new Array<T>(capacity);
 	}
 
@@ -39,43 +41,98 @@ export class Stack<T> {
 		return itemCount;
 	}
 
-	public pop(): T {
-		if (this.head === 0)
-			throw new Error('No more items in stack!');
+	public pop<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		if (count === undefined) {
+			if (this.head === 0)
+				throw new Error('No more items in stack!');
 
-		const item = this.buffer[--this.head]!;
-		this.buffer[this.head] = undefined;
+			const item = this.buffer[--this.head]!;
+			this.buffer[this.head] = undefined;
 
-		return item;
+			return item as any;
+		}
+
+		if (count > this.head)
+			throw new Error('Not enough items in stack!');
+
+		const items: T[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(this.buffer[--this.head]!);
+			this.buffer[this.head] = undefined;
+		}
+
+		return items as any;
 	}
 
+	public tryPop<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T, string> {
+		if (count === undefined) {
+			if (this.head === 0)
+				return tryResult.fail('No more items in stack!');
 
-	public tryPop(): TryResult<T> {
-		if (this.head === 0)
-			return tryResult.fail();
+			const item = this.buffer[--this.head]!;
+			this.buffer[this.head] = undefined;
 
-		const item = this.buffer[--this.head]!;
-		this.buffer[this.head] = undefined;
+			return tryResult.succeed(item) as any;
+		}
 
-		return tryResult.succeed(item);
+		if (count > this.head)
+			return tryResult.fail('Not enough items in stack!');
+
+		const items: T[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(this.buffer[--this.head]!);
+			this.buffer[this.head] = undefined;
+		}
+
+		return tryResult.succeed(items) as any;
 	}
 
-	public peek(): T {
-		if (this.head === 0)
-			throw new Error('No more items in stack!');
+	public peek<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		if (count === undefined) {
+			if (this.head === 0)
+				throw new Error('No more items in stack!');
 
-		return this.buffer[this.head - 1]!;
+			return this.buffer[this.head - 1]! as any;
+		}
+
+		if (count > this.head)
+			throw new Error('Not enough items in stack!');
+
+		const items: T[] = [];
+		for (let i = 0; i < count; i++)
+			items.unshift(this.buffer[this.head - 1 - i]!);
+
+		return items as any;
 	}
 
-	public tryPeek(): TryResult<T> {
-		if (this.head === 0)
-			return tryResult.fail();
+	public tryPeek<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T, string> {
+		if (count === undefined) {
+			if (this.head === 0)
+				return tryResult.fail('No more items in stack!');
 
-		return tryResult.succeed(this.buffer[this.head - 1]!);
+			return tryResult.succeed(this.buffer[this.head - 1]!) as any;
+		}
+
+		if (count > this.head)
+			return tryResult.fail('Not enough items in stack!');
+
+		const items: T[] = [];
+		for (let i = 0; i < count; i++)
+			items.unshift(this.buffer[this.head - 1 - i]!);
+
+		return tryResult.succeed(items) as any;
 	}
 
 	public clear(): void {
-		this.buffer = new Array<T>(this.capacity);
+		this.buffer = new Array<T>(this.initialCapacity);
 		this.head = 0;
 	}
 
@@ -98,12 +155,16 @@ export class LinearStack<T> extends Stack<T> implements ILinear<T> {
 		return super.push(items);
 	}
 
-	public detach(): T {
-		return super.pop();
+	public detach<Count extends number | undefined = undefined>(
+		count?: Count,
+	): Count extends number ? T[] : T {
+		return super.pop(count);
 	}
 
-	public tryDetach(): TryResult<T> {
-		return super.tryPop();
+	public tryDetach<Count extends number | undefined = undefined>(
+		count?: Count,
+	): TryResult<Count extends number ? T[] : T, string> {
+		return super.tryPop(count);
 	}
 
 }
