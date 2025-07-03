@@ -69,8 +69,10 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @returns A `Set` of all `T`s that were removed, including the key if it was also removed.
 	 */
 	public remove(key: T, values: Some<T>): Set<T> {
-		const set = this.getOrAdd(key);
+		if (!this.has(key))
+			return new Set<T>();
 
+		const set = this.get(key)!;
 		const removed = new Set<T>();
 
 		for (const value of someToIterable(values)) {
