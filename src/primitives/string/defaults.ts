@@ -14,7 +14,7 @@ export class StringDefaults {
 	 *
 	 * You may want to modify this set at startup if you need other defaults.
 	 */
-	public static readonly separators = new Set([ ':', ';', ',', '|' ]);
+	public static readonly separators = new Set([ ':', ';', ',', '.', '|' ]);
 
 	/**
 	 * When some `separators` are provided as an arg, return them, otherwise return the defaults.

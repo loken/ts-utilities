@@ -4,34 +4,67 @@ import { splitBy, splitKvp } from '../../../src/primitives/string/splitting.js';
 
 
 describe('splitBy', () => {
-	it('should split by default separators by default', () => {
-		const parts = splitBy('A|B|C');
+	it('SplitByDefault', () => {
+		const parts = splitBy('A,B,C');
 
 		expect(parts).toEqual([ 'A', 'B', 'C' ]);
 	});
 
-	it('should split by provided separators', () => {
+	it('SplitBy', () => {
+		const parts = splitBy('A-B-C', { sep: '-' });
+
+		expect(parts).toEqual([ 'A', 'B', 'C' ]);
+	});
+
+	it('SplitBy_WithMultipleSeparators', () => {
 		const parts = splitBy('A-B&C', { sep: [ '-', '&' ] });
 
 		expect(parts).toEqual([ 'A', 'B', 'C' ]);
 	});
 
-	it('should split by provided separators that has a special meaning in regex', () => {
-		const parts = splitBy('A^B$C', { sep: [ '^', '$' ] });
-
-		expect(parts).toEqual([ 'A', 'B', 'C' ]);
-	});
-
-	it('should split by provided separators that are more than 1 in length', () => {
+	it('SplitBy_WithStringSeparators', () => {
 		const parts = splitBy('A::B<something>C', { sep: [ '::', '<something>' ] });
 
 		expect(parts).toEqual([ 'A', 'B', 'C' ]);
 	});
 
-	it('should remove empty strings by default', () => {
-		const parts = splitBy('A||B|C');
+	it('SplitBy_RemovesEmptyEntriesByDefault', () => {
+		const parts = splitBy('A,,B,C', { sep: ',' });
 
 		expect(parts).toEqual([ 'A', 'B', 'C' ]);
+	});
+
+	it('SplitBy_HandlesRegexSpecialCharacters', () => {
+		const parts = splitBy('A^B$C', { sep: [ '^', '$' ] });
+
+		expect(parts).toEqual([ 'A', 'B', 'C' ]);
+	});
+
+	it('SplitByDefault_UsesDefaultSeparators', () => {
+		const parts = splitBy('A:B;C,D');
+
+		expect(parts).toEqual([ 'A', 'B', 'C', 'D' ]);
+	});
+
+	it('SplitByDefault_WithPipeCharacter', () => {
+		const parts = splitBy('A|B|C');
+
+		expect(parts).toEqual([ 'A', 'B', 'C' ]);
+	});
+
+	it('SplitBy_WorksWithAllDefaultSeparators', () => {
+		const testCases = [
+			{ input: 'A,B,C', separator: ',', expected: [ 'A', 'B', 'C' ] },
+			{ input: 'A.B.C', separator: '.', expected: [ 'A', 'B', 'C' ] },
+			{ input: 'A;B;C', separator: ';', expected: [ 'A', 'B', 'C' ] },
+			{ input: 'A:B:C', separator: ':', expected: [ 'A', 'B', 'C' ] },
+			{ input: 'A|B|C', separator: '|', expected: [ 'A', 'B', 'C' ] },
+		];
+
+		for (const testCase of testCases) {
+			const result = splitBy(testCase.input, { sep: testCase.separator });
+			expect(result).toEqual(testCase.expected);
+		}
 	});
 
 	it('should be able to trim the results', () => {
@@ -44,29 +77,35 @@ describe('splitBy', () => {
 });
 
 describe('splitKvp', () => {
-	it('should split into a tuple', () => {
-		const kvp = splitKvp('Key|Value');
+	it('SplitKvp_OfStrings', () => {
+		const kvp = splitKvp('A:B');
 
-		expect(kvp).toEqual([ 'Key', 'Value' ]);
+		expect(kvp).toEqual([ 'A', 'B' ]);
 	});
 
-	it('should split into a tuple of 2 even when it could split into more parts', () => {
-		const kvp = splitKvp('Key|Value|With|Extras');
+	it('SplitKvp_WithExtraSegments', () => {
+		const kvp = splitKvp('A:B:Extra');
 
 		// NB! Note that this behavior is different than in .NET,
-		// which would have used "Value|With|Extras" as the value.
-		expect(kvp).toEqual([ 'Key', 'Value' ]);
+		// which would have used "B:Extra" as the value.
+		expect(kvp).toEqual([ 'A', 'B' ]);
 	});
 
-	it('should yield a value of `null` when there is no separator', () => {
+	it('SplitKvp_WithoutSeparator', () => {
 		const kvp = splitKvp('Key');
 
 		expect(kvp).toEqual([ 'Key', null ]);
 	});
 
-	it('should yield an empty key when there are no segments', () => {
+	it('SplitKvp_WithEmptyString', () => {
 		const kvp = splitKvp('');
 
 		expect(kvp).toEqual([ '', null ]);
+	});
+
+	it('SplitKvp_WithEmptyValuePart', () => {
+		const kvp = splitKvp('Key:');
+
+		expect(kvp).toEqual([ 'Key', null ]);
 	});
 });
