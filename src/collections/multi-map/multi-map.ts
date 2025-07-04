@@ -1,6 +1,6 @@
 import { splitBy, splitKvp } from '../../primitives/string/splitting.js';
 import { getTrim, trimBy } from '../../primitives/string/trimming.js';
-import { addSome, iterateSome, type Some } from '../iteration/some.js';
+import { addSome, someToIterable, type Some } from '../iteration/some.js';
 import { mapGetLazy } from '../map.js';
 import { type MultiMapParsing, type MultiMapRendering, type MultiMapSeparators, type MultiMapTrim } from './multi-map-types.js';
 
@@ -35,6 +35,15 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	}
 
 	/**
+	 * Add a key with an empty set of values.
+	 * @param key The map key.
+	 * @returns The empty `Set<T>` that was created or already existed.
+	 */
+	public addEmpty(key: T) {
+		return this.getOrAdd(key);
+	}
+
+	/**
 	 * Add one or more `values` to the set at the `key`.
 	 *
 	 * Will create and add the `Set` to the `Map` if it doesn't already exist.
@@ -57,20 +66,24 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * Will delete the `Set` from the `Map` if it ends up empty after removing the `values`.
 	 * @param key The map key.
 	 * @param values The values to remove.
-	 * @returns The subset of `values` that were previously in the `Set`.
+	 * @returns A `Set` of all `T`s that were removed, including the key if it was also removed.
 	 */
-	public remove(key: T, values: Some<T>): T[] {
-		const set = this.getOrAdd(key);
+	public remove(key: T, values: Some<T>): Set<T> {
+		if (!this.has(key))
+			return new Set<T>();
 
-		const removed: T[] = [];
+		const set = this.get(key)!;
+		const removed = new Set<T>();
 
-		for (const value of iterateSome(values)) {
+		for (const value of someToIterable(values)) {
 			if (set.delete(value))
-				removed.push(value);
+				removed.add(value);
 		}
 
-		if (set.size === 0)
-			this.delete(key);
+		if (set.size === 0) {
+			if (this.delete(key))
+				removed.add(key);
+		}
 
 		return removed;
 	}
@@ -137,7 +150,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 			const key = options?.transform?.(trimmedKey) ?? (trimmedKey as T);
 
 			if (rawValue === null) {
-				this.getOrAdd(key);
+				this.addEmpty(key);
 			}
 			else {
 				this.add(key, splitBy(rawValue, { sep: sep.value }).map(value => {

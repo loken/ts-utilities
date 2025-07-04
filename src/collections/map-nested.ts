@@ -1,5 +1,5 @@
 import type { ValueProvider } from '../patterns/value-provider.js';
-import { type Some, someToArray, iterateSome } from './iteration/some.js';
+import { type Some, someToArray } from './iteration/some.js';
 import { mapGetLazy } from './map.js';
 
 
@@ -35,7 +35,7 @@ export const mapGetLazyNested = <
 	const innerKeys = allKeys.slice(0, -1);
 	const lastKey = allKeys[allKeys.length - 1]!;
 	let iter: NestedMap<TKey, TValue> = map;
-	for (const key of iterateSome(innerKeys)) {
+	for (const key of innerKeys) {
 		iter = mapGetLazy(iter, key, () => new Map() as NestedMap<TKey, TValue>) as NestedMap<TKey, TValue>;
 
 		if (iter instanceof Map === false)
