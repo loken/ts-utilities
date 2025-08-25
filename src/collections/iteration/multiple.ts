@@ -9,7 +9,7 @@ export type Multiple<T> = T | T[] | Set<T> | IterableIterator<T>;
  * format of the `sources` at the call site.
  * @param source One or more sources.
  */
-export function* iterateMultiple<T>(...sources: Multiple<T>[]): Generator<T> {
+export function* iterateMultiple<T>(...sources: Multiple<T>[]): Generator<T, undefined, undefined> {
 	for (const source of sources) {
 		if (typeof source === 'object' && source !== null && Symbol.iterator in source) {
 			for (const s of source)

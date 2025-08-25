@@ -9,7 +9,7 @@ export type Some<T> = T | T[] | Set<T>;
  * format of the `sources` at the call site.
  * @param sources One or more sources.
  */
-export function *iterateSome<T>(...sources: Some<T>[]): Generator<T, void, unknown> {
+export function *iterateSome<T>(...sources: Some<T>[]): Generator<T, undefined, undefined> {
 	for (const source of sources) {
 		if (Array.isArray(source) || source instanceof Set) {
 			for (const s of source)

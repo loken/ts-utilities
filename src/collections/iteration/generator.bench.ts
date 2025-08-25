@@ -45,7 +45,7 @@ counts.forEach(count => {
 	});
 });
 
-function *generateSequence(count: number): Generator<number> {
+function *generateSequence(count: number): Generator<number, undefined, undefined> {
 	for (let i = 0; i < count; i++)
 		yield i;
 }
