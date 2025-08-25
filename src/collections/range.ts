@@ -3,7 +3,7 @@
  * @param start The first value in the sequence.
  * @param count The number of values to generate.
  */
-export function* traverseRange(start: number, count: number) {
+export function* traverseRange(start: number, count: number): Generator<number, void, unknown> {
 	let current = start;
 	while (count-- > 0)
 		yield current++;
@@ -14,6 +14,6 @@ export function* traverseRange(start: number, count: number) {
  * @param start The first value in the array.
  * @param count The number of values to add.
  */
-export const range = (start: number, count: number) => {
+export const range = (start: number, count: number): number[] => {
 	return [ ...traverseRange(start, count) ];
 };

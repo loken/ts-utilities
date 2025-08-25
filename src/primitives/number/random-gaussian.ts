@@ -8,7 +8,7 @@
  * @param stdDev The standard deviation.
  * @returns A random floating-point number.
  */
-export const randomGaussian = (mean = 0, stdDev = 1) => {
+export const randomGaussian = (mean = 0, stdDev = 1): number => {
 	// Random numbers in the interval: (0,1]
 	const u1 = 1 - Math.random();
 	const u2 = 1 - Math.random();

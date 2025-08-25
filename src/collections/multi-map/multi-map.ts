@@ -14,7 +14,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	/**
 	 * Get a set of all keys and values in the multi map.
 	 */
-	public getAll() {
+	public getAll(): Set<T> {
 		const all = new Set<T>();
 
 		for (const [ key, values ] of this) {
@@ -30,7 +30,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param key The map key.
 	 * @returns The `Set<T>` that already existed or was added.
 	 */
-	public getOrAdd(key: T) {
+	public getOrAdd(key: T): Set<T> {
 		return mapGetLazy(this, key, () => new Set<T>());
 	}
 
@@ -39,7 +39,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param key The map key.
 	 * @returns The empty `Set<T>` that was created or already existed.
 	 */
-	public addEmpty(key: T) {
+	public addEmpty(key: T): Set<T> {
 		return this.getOrAdd(key);
 	}
 
@@ -96,7 +96,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param source The JSON compatible source record.
 	 * @returns A `MultiMap<string>` with the `source` values.
 	 */
-	public static readRecord(source: Record<string, string[]>) {
+	public static readRecord(source: Record<string, string[]>): MultiMap<string> {
 		const map = new MultiMap<string>();
 
 		for (const [ key, values ] of Object.entries(source))
@@ -111,7 +111,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	 * @param source The JSON representing a record of arrays of strings.
 	 * @returns A `MultiMap<string>` with the `json` values.
 	 */
-	public static readJson(json: string) {
+	public static readJson(json: string): MultiMap<string> {
 		return this.readRecord(JSON.parse(json));
 	}
 
@@ -226,7 +226,7 @@ export class MultiMap<T = string> extends Map<T, Set<T>> {
 	});
 
 	/** Create `MultiMapSeparators` from the `separators` and `defaultSeparators`. */
-	public static getSeparators(separators?: MultiMapSeparators) {
+	public static getSeparators(separators?: MultiMapSeparators): MultiMapSeparators {
 		return {
 			...MultiMap.defaultSeparators,
 			...separators,

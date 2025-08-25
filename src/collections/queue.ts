@@ -7,7 +7,7 @@ export class Queue<T = any> {
 	/** The initial capacity. */
 	public readonly initialCapacity: number;
 	/** The current capacity. */
-	public get capacity() { return this.buffer.length; }
+	public get capacity(): number { return this.buffer.length; }
 
 	/** A monotonically increasing array of items, serving as a ring buffer. */
 	private buffer: (T | undefined)[];
@@ -19,7 +19,7 @@ export class Queue<T = any> {
 	private num:    number = 0;
 
 	/** The number of items in the queue. */
-	public get count() { return this.num; }
+	public get count(): number { return this.num; }
 
 	constructor(capacity: number = 16) {
 		if (capacity < 1)
@@ -201,7 +201,7 @@ export class Queue<T = any> {
 		this.num = 0;
 	}
 
-	private grow(requiredCapacity: number) {
+	private grow(requiredCapacity: number): void {
 		if (this.buffer.length >= requiredCapacity)
 			return;
 

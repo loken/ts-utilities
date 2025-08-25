@@ -6,7 +6,7 @@ import { iterateAll } from './iterate.js';
 describe('iterateAll', () => {
 	const exposed: string[] = [];
 
-	const testGenerator = function*() {
+	const testGenerator = function*(): Generator<'a' | 'b' | 'c'> {
 		yield 'a';
 		exposed.push('a');
 		yield 'b';

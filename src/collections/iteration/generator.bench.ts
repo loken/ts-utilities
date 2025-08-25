@@ -45,12 +45,12 @@ counts.forEach(count => {
 	});
 });
 
-function *generateSequence(count: number) {
+function *generateSequence(count: number): Generator<number> {
 	for (let i = 0; i < count; i++)
 		yield i;
 }
 
-function generateArray(count: number) {
+function generateArray(count: number): number[] {
 	const result: number[] = [];
 	for (let i = 0; i < count; i++)
 		result.push(i);

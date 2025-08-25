@@ -26,7 +26,7 @@ describe('iterateMultiple', () => {
 	});
 
 	it('should iterate an item generator', () => {
-		function* generateItems() {
+		function* generateItems(): Generator<{ a: number }> {
 			yield { a: 1 };
 			yield { a: 2 };
 		}
@@ -68,7 +68,7 @@ describe('multipleToArray', () => {
 	});
 
 	it('should spread an generator', () => {
-		function* generateItems() {
+		function* generateItems(): Generator<{ a: number }> {
 			yield { a: 1 };
 			yield { a: 2 };
 		}

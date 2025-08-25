@@ -7,7 +7,7 @@ export class Stack<T = any> {
 	/** The initial capacity. */
 	public readonly initialCapacity: number;
 	/** The current capacity. */
-	public get capacity() { return this.buffer.length; }
+	public get capacity(): number { return this.buffer.length; }
 
 	/** A monotonically increasing array of items. */
 	private buffer: (T | undefined)[];
@@ -15,7 +15,7 @@ export class Stack<T = any> {
 	private head:   number = 0;
 
 	/** The number of items in the stack. */
-	public get count() { return this.head; }
+	public get count(): number { return this.head; }
 
 	constructor(capacity: number = 16) {
 		if (capacity < 1)

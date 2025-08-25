@@ -13,7 +13,7 @@ export const mapGetLazy = <TKey, TValue>(
 	key: TKey,
 	def: ValueProvider<TValue>,
 	retrieveAction?: (value: TValue) => void,
-) => {
+): TValue => {
 	if (map.has(key)) {
 		const val = map.get(key)!;
 		retrieveAction?.(val);
@@ -38,7 +38,7 @@ export const mapGetLazySet = <TKey, TValue>(
 	map: Map<TKey, Set<TValue>>,
 	key: TKey,
 	retrieveAction?: (value: Set<TValue>) => void,
-) => {
+): Set<TValue> => {
 	return mapGetLazy(map, key, () => new Set<TValue>(), retrieveAction);
 };
 
@@ -52,6 +52,6 @@ export const mapGetLazyMap = <TKey, MKey, MValue>(
 	map: Map<TKey, Map<MKey, MValue>>,
 	key: TKey,
 	retrieveAction?: (value: Map<MKey, MValue>) => void,
-) => {
+): Map<MKey, MValue> => {
 	return mapGetLazy(map, key, () => new Map<MKey, MValue>(), retrieveAction);
 };

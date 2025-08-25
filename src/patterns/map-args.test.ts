@@ -1,13 +1,19 @@
 import { expect, test } from 'vitest';
 
-import { mapArgs } from './map-args.js';
+import { mapArgs, type MapArgs } from './map-args.js';
 
 
-const mapPrefixTuple = <Args extends number[]>(prefix: string, ...args: Args) => {
+const mapPrefixTuple = <Args extends number[]>(
+	prefix: string,
+	...args: Args
+): MapArgs<Args, string, true, false> => {
 	return mapArgs(args, arg => `${ prefix }-${ arg }`, true, false);
 };
 
-const mapPrefixList = <Args extends number[]>(prefix: string, ...args: Args) => {
+const mapPrefixList = <Args extends number[]>(
+	prefix: string,
+	...args: Args
+): MapArgs<Args, string, false, false> => {
 	return mapArgs(args, arg => `${ prefix }-${ arg }`, false, false);
 };
 

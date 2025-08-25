@@ -7,7 +7,7 @@ export type TrimDir = 'start' | 'end' | 'both' | 'none';
 /**
  * Trim the `str` in the indicated `direction` or pass it through if none is provided.
  */
-export const trimBy = (str: string, direction?: TrimDir) => {
+export const trimBy = (str: string, direction?: TrimDir): string => {
 	switch (direction) {
 	case 'start':
 		return str.trimStart();

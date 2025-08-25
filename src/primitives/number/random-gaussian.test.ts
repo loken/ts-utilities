@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi, type MockInstance } from 'vitest';
 
 import { randomGaussian } from './random-gaussian.js';
 import mockData from './random-gaussian.mock.json' assert { type: 'json' };
@@ -195,7 +195,7 @@ describe('with real randomness (statistical validation)', () => {
 });
 
 // For deterministic mocking of Math.random(), equivalent to .NET's seeded Random
-const createMathRandomMock = (seed = 0) => {
+const createMathRandomMock = (seed = 0): MockInstance<() => number> => {
 	let index = seed % mockData.length;
 
 	// The mockData contains a sequence of pre-generated values from Math.random()

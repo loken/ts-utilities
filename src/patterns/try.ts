@@ -36,10 +36,8 @@ function tryResultSucceed<Val>(value: Val): TrySuccess<Val> {
 	return Object.freeze([ value, true ]);
 }
 
-function tryResultFail(): TryFailure;
-function tryResultFail<Reason>(reason: Reason): TryError<Reason>;
-function tryResultFail(reason?: any) {
+function tryResultFail<Reason = undefined>(reason?: Reason): Reason extends undefined ? TryFailure : TryError<Reason> {
 	return reason !== undefined
-		? Object.freeze([ undefined, false, reason ])
-		: Object.freeze([ undefined, false ]);
+		? Object.freeze([ undefined, false, reason ]) as any
+		: Object.freeze([ undefined, false ]) as any;
 }

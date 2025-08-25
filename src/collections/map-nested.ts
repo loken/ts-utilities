@@ -27,7 +27,7 @@ export const mapGetLazyNested = <
 	path: Some<TKey>,
 	def: ValueProvider<TValue>,
 	retrieveAction?: (value: TValue) => void,
-) => {
+): TValue => {
 	const allKeys = someToArray(path);
 	if (allKeys.length === 0)
 		throw new Error('Must provide at least one key.');

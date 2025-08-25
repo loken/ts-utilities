@@ -54,12 +54,12 @@ export class ProbabilityScale implements ProbabilityScaleOptions {
 	/**
 	 * The number of layers tells us how many times we've applied the scale to the probability.
 	 */
-	public get layer() {
+	public get layer(): number {
 		return this.#stack.count;
 	}
 
 	/** The probability at the current `layer`. */
-	public get current() {
+	public get current(): number {
 		const [ current, success ] = this.#stack.tryPeek();
 
 		return success ? current : this.probability;
@@ -68,7 +68,7 @@ export class ProbabilityScale implements ProbabilityScaleOptions {
 	/**
 	 * Collect a pseudorandom sample of beating the current probability.
 	 */
-	public sample() {
+	public sample(): boolean {
 		return Math.random() <= this.current;
 	}
 
@@ -77,7 +77,7 @@ export class ProbabilityScale implements ProbabilityScaleOptions {
 	 * @param count- The number of times to scale. (Default: 1)
 	 * @returns The current probability after incrementing the layer.
 	 */
-	public increment(count = 1) {
+	public increment(count = 1): number {
 		let current = this.current;
 
 		while (count-- > 0) {
@@ -99,7 +99,7 @@ export class ProbabilityScale implements ProbabilityScaleOptions {
 	 * @throws {Error} If the specified number of layers is greater than or equal to the total number of layers in the stack.
 	 * @returns The current value after decrementing.
 	 */
-	public decrement(count = 1) {
+	public decrement(count = 1): number {
 		if (count > this.layer)
 			throw new Error(`Cannot decrement '${ count }' layers since that would require more layers than the '${ this.layer }' current layers.`);
 

@@ -14,14 +14,20 @@ export interface LinesTrim {
 /**
  *  Split the `input` on '\n' and otherwise according to the provided `options`.
  */
-export const splitLines = (input: string, options?: Omit<SplitOptions, 'sep' | 'trim'> & LinesTrim): string[] => {
+export const splitLines = (
+	input: string,
+	options?: Omit<SplitOptions, 'sep' | 'trim'> & LinesTrim,
+): string[] => {
 	const trimmedInput = trimBy(input, options?.input);
 
 	return splitBy(trimmedInput, { ...options, sep: '\n', trim: options?.lines });
 };
 
 /** Trim the `input` and its lines according to the `direction` and remove any empty lines. */
-export const trimLines = (input: string, direction: TrimDir | { input: TrimDir, lines: TrimDir } = { input: 'both', lines: 'start' }) => {
+export const trimLines = (
+	input: string,
+	direction: TrimDir | { input: TrimDir, lines: TrimDir } = { input: 'both', lines: 'start' },
+): string => {
 	const trim: LinesTrim = {
 		input: typeof direction === 'string' ? direction : direction.input,
 		lines: typeof direction === 'string' ? direction : direction.lines,

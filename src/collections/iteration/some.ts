@@ -9,7 +9,7 @@ export type Some<T> = T | T[] | Set<T>;
  * format of the `sources` at the call site.
  * @param sources One or more sources.
  */
-export function *iterateSome<T>(...sources: Some<T>[]): Generator<T> {
+export function *iterateSome<T>(...sources: Some<T>[]): Generator<T, void, unknown> {
 	for (const source of sources) {
 		if (Array.isArray(source) || source instanceof Set) {
 			for (const s of source)
@@ -119,7 +119,7 @@ export const removeSome = <T, Target extends T[] | Set<T> | Map<T, any>>(target:
 /**
  * Check whether the `item` is contained in `some` through a strict equality check.
  */
-export const inSome = <T>(item: T, some: Some<T>) => {
+export const inSome = <T>(item: T, some: Some<T>): boolean => {
 	if (Array.isArray(some))
 		return some.includes(item);
 	else if (some instanceof Set)
@@ -147,7 +147,7 @@ export const isSomeItem = <T>(some: Some<T>): some is T => {
 /**
  * Get the number of items in `some`.
  */
-export const countSome = <T>(some: Some<T>) => {
+export const countSome = <T>(some: Some<T>): number => {
 	if (Array.isArray(some))
 		return some.length;
 	else if (some instanceof Set)

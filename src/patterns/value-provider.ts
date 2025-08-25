@@ -10,6 +10,6 @@ export type CreatorFn<TValue, TKey = unknown> = unknown extends TKey ? () => TVa
 export type ValueProvider<TValue, TKey = unknown> = TValue | CreatorFn<TValue, TKey>;
 
 /** Get the value provided by the `valueProvider`. */
-export const resolveValueProvider = <T>(valueProvider: ValueProvider<T>) => {
+export const resolveValueProvider = <T>(valueProvider: ValueProvider<T>): T => {
 	return typeof valueProvider === 'function' ? (valueProvider as () => T)() : valueProvider;
 };
