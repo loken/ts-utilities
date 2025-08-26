@@ -132,6 +132,8 @@ const algorithm = (linear: ILinear<number>) => {
 }
 ```
 
+Note: `attach()` accepts Some<T> (single item, Array, or Set) and supports reverse insertion for Arrays/Sets. The same bulk semantics apply to `detach()`/`peek()` with an optional count, and their try* variants return TryResult instead of throwing.
+
 
 ### Strings
 

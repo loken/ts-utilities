@@ -115,4 +115,36 @@ describe('stack', () => {
 		expect(stack.pop(2)).toEqual([ undefined, null ]);
 		expect(stack.count).toBe(0);
 	});
+
+	it('should support reverse push for arrays', () => {
+		const stack = new Stack<number>();
+
+		stack.push([ 1, 2, 3 ], true);
+		expect(stack.count).toBe(3);
+
+		// With reverse=true, the push should result in 3,2,1 order in the stack
+		expect(stack.pop(3)).toEqual([ 1, 2, 3 ]);
+		expect(stack.count).toBe(0);
+	});
+
+	it('should support reverse push for Sets', () => {
+		const stack = new Stack<number>();
+		const set = new Set([ 1, 2, 3 ]);
+
+		stack.push(set, true);
+		expect(stack.count).toBe(3);
+
+		// The iteration order of Set is insertion order (1,2,3). With reverse=true,
+		// popping should return them in iteration order (1,2,3), since they were
+		// placed reversed in the buffer (3,2,1).
+		expect(stack.pop(3)).toEqual([ 1, 2, 3 ]);
+		expect(stack.count).toBe(0);
+	});
+
+	it('should ignore reverse for single item pushes', () => {
+		const stack = new Stack<number>();
+
+		stack.push(5, true);
+		expect(stack.pop()).toBe(5);
+	});
 });

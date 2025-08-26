@@ -2,6 +2,13 @@ import { type TryResult, tryResult } from '../patterns/try.js';
 import { isSomeItem, type Some } from './iteration/some.js';
 import { type ILinear } from './linear.js';
 
+/**
+ * A resizable LIFO stack backed by an array buffer.
+ *
+ * - Amortized O(1) push/pop for single items.
+ * - O(n) when pushing multiple items at once.
+ * - Supports pushing Arrays and Sets efficiently, with optional reverse order.
+ */
 export class Stack<T = any> {
 
 	/** The initial capacity. */
@@ -17,6 +24,11 @@ export class Stack<T = any> {
 	/** The number of items in the stack. */
 	public get count(): number { return this.head; }
 
+	/**
+	 * Create a new stack.
+	 * @param capacity Initial capacity of the underlying buffer (default: 16).
+	 * @throws Error when capacity < 1.
+	 */
 	constructor(capacity: number = 16) {
 		if (capacity < 1)
 			throw new Error('Capacity must be greater than zero!');
@@ -25,22 +37,77 @@ export class Stack<T = any> {
 		this.buffer = new Array<T>(capacity);
 	}
 
-	public push(items: Some<T>): number {
+	/**
+	 * Push one or more items onto the stack.
+	 * @param items A single item, an Array of items, or a Set of items.
+	 * @param reverse When true and items is an iterable (Array/Set), insert them in reverse order.
+	 * @returns The number of items pushed.
+	 */
+	public push(
+		items: Some<T>,
+		reverse = false,
+	): number {
+		const buffer = this.buffer;
+		const h0 = this.head;
+
 		if (isSomeItem(items)) {
-			this.grow(this.head + 1);
-			this.buffer[this.head++] = items;
+			this.grow(h0 + 1);
+			buffer[this.head++] = items;
 
 			return 1;
 		}
 
-		const itemCount = Array.isArray(items) ? items.length : items.size;
-		this.grow(this.head + itemCount);
-		for (const item of items)
-			this.buffer[this.head++] = item;
+		if (Array.isArray(items)) {
+			const length = items.length;
+			this.grow(h0 + length);
 
-		return itemCount;
+			if (reverse) {
+				// Place items[i] at descending destination.
+				const last = h0 + length - 1;
+				for (let i = 0; i < length; i++)
+					buffer[last - i] = items[i];
+				this.head = h0 + length;
+			}
+			else {
+				// Place items[i] at ascending destination.
+				for (let i = 0; i < length; i++)
+					buffer[h0 + i] = items[i];
+				this.head = h0 + length;
+			}
+
+			return length;
+		}
+		else {
+			const size = items.size;
+			this.grow(h0 + size);
+
+			if (reverse) {
+				// Write items in reverse order using a local write pointer.
+				const end = h0 + size;
+				let posRw = end - 1;
+				for (const item of items)
+					buffer[posRw--] = item;
+				this.head = end;
+			}
+			else {
+				// Write items in order using a local write pointer.
+				let posFw = h0;
+				for (const item of items)
+					buffer[posFw++] = item;
+				this.head = posFw;
+			}
+
+			return size;
+		}
 	}
 
+	/**
+	 * Pop one or more items off the stack.
+	 * - Without a count, pops and returns a single item.
+	 * - With a count, pops that many items and returns them in LIFO order as an array.
+	 * @param count Optional number of items to pop.
+	 * @throws Error when popping from an empty stack or not enough items are present.
+	 */
 	public pop<Count extends number | undefined = undefined>(
 		count?: Count,
 	): Count extends number ? T[] : T {
@@ -66,6 +133,12 @@ export class Stack<T = any> {
 		return items as any;
 	}
 
+	/**
+	 * Try to pop one or more items off the stack.
+	 * - Without a count, returns TryResult with a single item or an error message.
+	 * - With a count, returns TryResult with an array of items or an error message.
+	 * @param count Optional number of items to pop.
+	 */
 	public tryPop<Count extends number | undefined = undefined>(
 		count?: Count,
 	): TryResult<Count extends number ? T[] : T, string> {
@@ -91,6 +164,13 @@ export class Stack<T = any> {
 		return tryResult.succeed(items) as any;
 	}
 
+	/**
+	 * Peek at the top item(s) of the stack without removing them.
+	 * - Without a count, returns the top item.
+	 * - With a count, returns an array of items from top down.
+	 * @param count Optional number of items to peek.
+	 * @throws Error when peeking an empty stack or requesting more than available.
+	 */
 	public peek<Count extends number | undefined = undefined>(
 		count?: Count,
 	): Count extends number ? T[] : T {
@@ -111,6 +191,12 @@ export class Stack<T = any> {
 		return items as any;
 	}
 
+	/**
+	 * Try to peek at the top item(s) of the stack without removing them.
+	 * - Without a count, returns TryResult with the top item or an error message.
+	 * - With a count, returns TryResult with an array of items or an error message.
+	 * @param count Optional number of items to peek.
+	 */
 	public tryPeek<Count extends number | undefined = undefined>(
 		count?: Count,
 	): TryResult<Count extends number ? T[] : T, string> {
@@ -131,11 +217,16 @@ export class Stack<T = any> {
 		return tryResult.succeed(items) as any;
 	}
 
+	/** Clear the stack and reset capacity to the initial capacity. */
 	public clear(): void {
 		this.buffer = new Array<T>(this.initialCapacity);
 		this.head = 0;
 	}
 
+	/**
+	 * Ensure the buffer can hold at least requiredCapacity items, doubling as needed.
+	 * @param requiredCapacity Required minimum capacity.
+	 */
 	private grow(requiredCapacity: number): void {
 		if (this.buffer.length >= requiredCapacity)
 			return;
@@ -149,18 +240,28 @@ export class Stack<T = any> {
 
 }
 
+/**
+ * Linear interface wrapper around Stack.
+ * Provides attach/detach operations matching ILinear.
+ */
 export class LinearStack<T> extends Stack<T> implements ILinear<T> {
 
-	public attach(items: Some<T>): number {
-		return super.push(items);
+	/** Attach items to the stack (alias for push). */
+	public attach(
+		items: Some<T>,
+		reverse = false,
+	): number {
+		return super.push(items, reverse);
 	}
 
+	/** Detach items from the stack (alias for pop). */
 	public detach<Count extends number | undefined = undefined>(
 		count?: Count,
 	): Count extends number ? T[] : T {
 		return super.pop(count);
 	}
 
+	/** Try to detach items from the stack (alias for tryPop). */
 	public tryDetach<Count extends number | undefined = undefined>(
 		count?: Count,
 	): TryResult<Count extends number ? T[] : T, string> {

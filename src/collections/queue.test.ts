@@ -203,6 +203,29 @@ describe('queue', () => {
 		expect(queue.count).toBe(0);
 	});
 
+	it('should support reverse enqueue for arrays', () => {
+		const queue = new Queue<number>();
+
+		queue.enqueue([ 1, 2, 3 ], true);
+		expect(queue.count).toBe(3);
+
+		// With reverse=true, items are placed reversed so dequeue yields 3,2,1
+		expect(queue.dequeue(3)).toEqual([ 3, 2, 1 ]);
+		expect(queue.count).toBe(0);
+	});
+
+	it('should support reverse enqueue for Sets', () => {
+		const queue = new Queue<number>();
+		const set = new Set([ 1, 2, 3 ]);
+
+		queue.enqueue(set, true);
+		expect(queue.count).toBe(3);
+
+		// Set iteration is 1,2,3; reversed placement means dequeue 3,2,1
+		expect(queue.dequeue(3)).toEqual([ 3, 2, 1 ]);
+		expect(queue.count).toBe(0);
+	});
+
 	// Skipping this test as it may take a long time to run.
 	// Should be run as a performance test separately.
 	it.skip('should handle large numbers of enqueue and dequeue operations efficiently', () => {
